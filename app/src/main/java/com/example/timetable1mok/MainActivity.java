@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -17,8 +18,14 @@ import java.io.InputStream;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
-//    SharedPreferences settings;
-//    SharedPreferences.Editor prefEditor;
+    SharedPreferences settings;
+    SharedPreferences.Editor prefEditor;
+
+    String startDate;
+    String endDate;
+    String currentWeek_;
+    TextView textViewCurWeek;
+    Button buttonGroup;
 
     String DATABASE_FILE_NAME = "DATABASE";
     String LogTag = "MyApp";
@@ -27,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     ViewPager2 pager;
     Calendar calendar;
 
-    Integer changedGroup = 2; // выбраная группа
+    Integer changedGroup; // выбраная группа
     Integer changedWeek = 2;
 
     Integer currentDay; // день недели числом 0 1 2 3 4 5 6
@@ -51,21 +58,23 @@ public class MainActivity extends AppCompatActivity {
 
         getCurrentWeekDay();
 
-//        settings = getSharedPreferences("Settings", MODE_PRIVATE);
-//        prefEditor = settings.edit();
-//        changedGroup = settings.getInt("changedGroup", 2);
-//        changedWeek = settings.getInt("changedWeek", currentWeek);
+        settings = getSharedPreferences("Settings", MODE_PRIVATE);
+        prefEditor = settings.edit();
 
+        textViewCurWeek = findViewById(R.id.textViewCurWeek);
+        buttonGroup = findViewById(R.id.buttonGroup);
+
+        changedGroup = settings.getInt("changedGroup", 2);
+        buttonGroup.setText(changedGroup + " подгруппа");
 
         getTimetable();
     }
 
 //    @Override
-//    protected void onPause() {
+//    protected void on() {
 //        super.onPause();
 //
 //        prefEditor.putInt("changedGroup", changedGroup);
-//        prefEditor.putInt("changedWeek", changedWeek);
 //    }
 
 
@@ -197,10 +206,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    String startDate;
-    String endDate;
-    String currentWeek_;
-    TextView textViewCurWeek;
+
 
     void changeWeek() {
         currentWeekDays = new Integer[7];
@@ -214,7 +220,6 @@ public class MainActivity extends AppCompatActivity {
         calendar.set(Calendar.DAY_OF_WEEK, 2 + 6);
         endDate = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH)) + "." + String.format("%02d", calendar.get(Calendar.MONTH) + 1);
 
-        textViewCurWeek = findViewById(R.id.textViewCurWeek);
         if (calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) {
             changedWeek = 2;
             textViewCurWeek.setText(startDate + " - " + endDate + " нижняя неделя");
@@ -237,8 +242,9 @@ public class MainActivity extends AppCompatActivity {
                     changedGroup = 1;
                 }
 
-                Button buttonGroup = findViewById(R.id.buttonGroup);
                 buttonGroup.setText(changedGroup + " подгруппа");
+                prefEditor.putInt("changedGroup",changedGroup);
+                prefEditor.apply();
 
                 currentTab = pager.getCurrentItem();
                 setTimetable();
