@@ -1,0 +1,152 @@
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?attr/colorSecondary"
+    android:padding="15dp"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/buttonGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:insetLeft="6dp"
+                android:insetRight="6dp"
+                android:onClick="onClick"
+                android:text="2 подгруппа"
+                android:textAllCaps="false"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/buttonToCurrentDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:insetLeft="6dp"
+                android:insetRight="6dp"
+                android:onClick="onClick"
+                android:text="К текущей дате"
+                android:textAllCaps="false"
+                android:textSize="16sp" />
+
+            <!--            <TextView-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_gravity="center"-->
+            <!--                android:gravity="center"-->
+            <!--                android:text="до начала пары:"-->
+            <!--                android:textColor="@color/black"-->
+            <!--                android:textSize="16sp"-->
+            <!--                android:textStyle="bold" />-->
+
+            <!--            <TextView-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="wrap_content"-->
+            <!--                android:layout_gravity="center"-->
+            <!--                android:gravity="center"-->
+            <!--                android:text="34:37"-->
+            <!--                android:textColor="@color/black"-->
+            <!--                android:textSize="22sp"-->
+            <!--                android:textStyle="bold" />-->
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout1">
+
+        <Button
+            android:id="@+id/buttonWeekDown"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:insetLeft="6dp"
+            android:insetRight="6dp"
+            android:onClick="onClick"
+            android:text="◄"
+            android:textAllCaps="false"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textViewCurWeek"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="19.09 - 25.09 нижняя неделя"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/buttonWeekUp"
+            android:layout_width="55dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:insetLeft="6dp"
+            android:insetRight="6dp"
+            android:onClick="onClick"
+            android:text="►"
+            android:textAllCaps="false"
+            android:textSize="16sp" />
+
+
+    </LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?attr/colorSecondary"
+        android:textSize="22sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/pager"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="?attr/colorSecondary"
+        android:textSize="22sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tab_layout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
