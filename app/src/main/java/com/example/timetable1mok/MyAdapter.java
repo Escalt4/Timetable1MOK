@@ -5,36 +5,24 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import java.util.Calendar;
-
 public class MyAdapter extends FragmentStateAdapter {
     private String[][][][][] timetable;
     private String[][] calls;
-    private Integer changedGroup;
-    private Calendar calendar;
-    private Integer changedWeek;
-    private Integer currentDay;
-    private Integer currentMonth;
-    private Integer[] currentWeekDays;
+    private Integer group;
+    private Integer week;
 
-
-    public MyAdapter(FragmentActivity fragmentActivity, String[][][][][] timetable, String[][] calls, Integer changedGroup, Calendar calendar, Integer changedWeek, Integer currentDay, Integer currentMonth, Integer[] currentWeekDays) {
+    public MyAdapter(FragmentActivity fragmentActivity, String[][][][][] timetable, String[][] calls, Integer group, Integer week) {
         super(fragmentActivity);
         this.timetable = timetable;
         this.calls = calls;
-        this.changedGroup = changedGroup;
-        this.calendar = calendar;
-        this.changedWeek = changedWeek;
-        this.currentDay = currentDay;
-        this.currentMonth = currentMonth;
-        this.currentWeekDays = currentWeekDays;
-
+        this.group = group;
+        this.week = week;
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return (PageFragment.newInstance(position, timetable, calls, changedGroup,calendar, changedWeek, currentDay, currentMonth, currentWeekDays));
+        return PageFragment.newInstance(position, timetable, calls, group, week);
     }
 
     @Override

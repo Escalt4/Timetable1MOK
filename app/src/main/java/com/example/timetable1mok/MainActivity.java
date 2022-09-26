@@ -11,43 +11,44 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.io.InputStream;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class MainActivity extends AppCompatActivity {
-    SharedPreferences settings;
-    SharedPreferences.Editor prefEditor;
-
-    String startDate;
-    String endDate;
-    String currentWeek_;
-    TextView textViewCurWeek;
-    Button buttonGroup;
-
     String DATABASE_FILE_NAME = "DATABASE";
     String LogTag = "MyApp";
     String[] tabsName = {"ПН", "ВТ", "СР", "ЧТ", "ПТ"};
 
+    SharedPreferences settings;
+    SharedPreferences.Editor prefEditor;
+
+    TextView textViewCurWeek;
+    Button buttonGroup;
     ViewPager2 pager;
     Calendar calendar;
-
-    Integer changedGroup; // выбраная группа
-    Integer changedWeek = 2;
-
-    Integer currentDay; // день недели числом 0 1 2 3 4 5 6
-    Integer currentWeek; // четная или нечетная неделя числом 0 1
-    Integer currentMonth; // месяц числом
-    Integer[] currentWeekDays; // список дней текущей недели
-
-    Integer currentTab = 0; // текущая вкладка
-
 
     String[][][][][] timetable;
     String[][] calls;
 
+    Integer group; // выбраная группа
+    Integer week; // четная или нечетная неделя
+    Integer currentDayNum; // день недели числом
+    Integer[] weekDays; // список дней текущей недели
+
+    String startDate;
+    String endDate;
+
+    Integer currentTab; // текущая вкладка
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,82 +57,66 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().hide();
 
-        getCurrentWeekDay();
-
-        settings = getSharedPreferences("Settings", MODE_PRIVATE);
-        prefEditor = settings.edit();
-
         textViewCurWeek = findViewById(R.id.textViewCurWeek);
         buttonGroup = findViewById(R.id.buttonGroup);
 
-        changedGroup = settings.getInt("changedGroup", 2);
-        buttonGroup.setText(changedGroup + " подгруппа");
+        initializeDate();
+
+        settings = getSharedPreferences("Settings", MODE_PRIVATE);
+        prefEditor = settings.edit();
+        group = settings.getInt("group", 2);
+        buttonGroup.setText(group + " подгруппа");
 
         getTimetable();
     }
 
-//    @Override
-//    protected void on() {
-//        super.onPause();
-//
-//        prefEditor.putInt("changedGroup", changedGroup);
-//    }
-
-
-    public void getCurrentWeekDay() {
+    public void initializeDate() {
         calendar = Calendar.getInstance();
-        currentMonth = calendar.get(Calendar.MONTH);
-        if (calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) {
-            currentWeek = 2;
-        } else {
-            currentWeek = 1;
-        }
-        Integer[] dayOfWeek = {123, 6, 0, 1, 2, 3, 4, 5};
-        currentDay = dayOfWeek[calendar.get(Calendar.DAY_OF_WEEK)];
 
-        currentWeekDays = new Integer[7];
+        Integer[] dayOfWeek = {123, 6, 0, 1, 2, 3, 4, 5};
+        currentDayNum = dayOfWeek[calendar.get(Calendar.DAY_OF_WEEK)];
+        if (currentDayNum < 5) {
+            currentTab = currentDayNum;
+        } else {
+            calendar.add(Calendar.DAY_OF_YEAR, 7);
+            currentTab = 0;
+        }
+
+        calendar.set(Calendar.DAY_OF_WEEK, 2);
+        startDate = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH)) + "." + String.format("%02d", calendar.get(Calendar.MONTH) + 1);
+        calendar.set(Calendar.DAY_OF_WEEK, 2 + 6);
+        endDate = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH)) + "." + String.format("%02d", calendar.get(Calendar.MONTH) + 1);
+
+        if (calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) {
+            week = 2;
+            textViewCurWeek.setText(startDate + " - " + endDate + " нижняя неделя");
+        } else {
+            textViewCurWeek.setText(startDate + " - " + endDate + " верхняя неделя");
+            week = 1;
+        }
+
+        weekDays = new Integer[7];
         for (int d = 0; d < 7; d++) {
             calendar.set(Calendar.DAY_OF_WEEK, d + 2);
-            currentWeekDays[d] = calendar.get(Calendar.DAY_OF_MONTH);
+            weekDays[d] = calendar.get(Calendar.DAY_OF_MONTH);
         }
-
     }
-
-//    public void openFile() {
-//        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//        intent.addCategory(Intent.CATEGORY_OPENABLE);
-//        intent.setType("*/*");
-//        startActivityForResult(intent, 0);
-//    }
-//
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-//        super.onActivityResult(requestCode, resultCode, resultData);
-//        if (resultData != null && resultCode == Activity.RESULT_OK) {
-//            Uri uri = resultData.getData();
-//            getTimetable(uri);
-//        }
-//    }
 
     public void getTimetable() {
         try {
             InputStream inputStream = getResources().openRawResource(R.raw.timetable_1mok);
-//            FileInputStream inputStream = openFileInput(DATABASE_FILE_NAME);
-//            InputStream inputStream = getContentResolver().openInputStream(uri);
 
             byte[] buffer = new byte[inputStream.available()];
             inputStream.read(buffer);
             inputStream.close();
             String text = new String(buffer);
 
-//            FileOutputStream fos = openFileOutput(DATABASE_FILE_NAME, MODE_PRIVATE);
-//            fos.write(text.getBytes());
-//            fos.close();
-
             String[] timetableBlocks = text.split("========");
 
-            timetable = new String[5][2][2][5][3];
+            timetable = new String[5][2][2][5][4];
             calls = new String[2][5];
+
+            calls[1][4] = "00.00-00.00";
 
             for (int i = 0; i < timetableBlocks.length; i++) {
                 String[] blocksPart = timetableBlocks[i].split("--------");
@@ -142,11 +127,11 @@ public class MainActivity extends AppCompatActivity {
 
                         if (j == 1) {
                             for (int k = 1; k < strings.length; k++) {
-                                calls[0][k - 1] = strings[k].replace("\"", "");
+                                calls[0][k - 1] = strings[k].replace("\"", "").replace("\r", "").replace("\n", "");
                             }
                         } else {
                             for (int k = 1; k < strings.length; k++) {
-                                calls[1][k - 1] = strings[k].replace("\"", "");
+                                calls[1][k - 1] = strings[k].replace("\"", "").replace("\r", "").replace("\n", "");
                             }
                         }
                     }
@@ -155,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                     for (int j = 1; j < blocksPart.length; j++) {
                         String[] strings = blocksPart[j].split("\n");
 
-                        for (int k = 1; k < strings.length; k = k + 5) {
+                        for (int k = 1; k < strings.length; k = k + 6) {
                             String[] temp1 = strings[k].split(" ");
 
                             for (int q = 0; q < temp1.length; q++) {
@@ -163,12 +148,8 @@ public class MainActivity extends AppCompatActivity {
                                 int week_ = Integer.parseInt(Character.toString(temp1[q].charAt(1))) - 1;
                                 int day_ = Integer.parseInt(strings[k + 1].replace("\r", "")) - 1;
 
-                                for (int w = 0; w < 3; w++) {
-                                    timetable[i - 1]
-                                            [groop_]
-                                            [week_]
-                                            [day_]
-                                            [w] = strings[k + 2 + w];
+                                for (int w = 0; w < 4; w++) {
+                                    timetable[i - 1][groop_][week_][day_][w] = strings[k + 2 + w].replace("\r", "").replace("\n", "");
                                 }
                             }
                         }
@@ -177,73 +158,77 @@ public class MainActivity extends AppCompatActivity {
             }
 
             setTimetable();
-
         } catch (Exception ex) {
-            Log.e(LogTag, ex.getMessage());
+            Log.e(LogTag, Log.getStackTraceString(ex));
         }
-
     }
-
 
     void setTimetable() {
         pager = findViewById(R.id.pager);
-        FragmentStateAdapter pageAdapter = new MyAdapter(this, timetable, calls, changedGroup, calendar, changedWeek, currentDay, currentMonth, currentWeekDays);
+        FragmentStateAdapter pageAdapter = new MyAdapter(this, timetable, calls, group, week);
         pager.setAdapter(pageAdapter);
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, pager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(TabLayout.Tab tab, int position) {
-                tab.setText(tabsName[position]+"\n"+currentWeekDays[position]);
+                tab.setText(tabsName[position] + "\n" + weekDays[position]);
             }
         });
         tabLayoutMediator.attach();
 
         pager.setCurrentItem(currentTab, false);
-        if (currentDay < 5) {
-            pager.setCurrentItem(currentDay, false);
-            currentTab = currentDay;
-        }
     }
 
+//    Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//            startTimer();
+//        }
+//    };
+//
+//    public void startTimer() {
+//        handler.postDelayed(runnable, 1000);
+//    }
 
 
-    void changeWeek() {
-        currentWeekDays = new Integer[7];
-        for (int d = 0; d < 7; d++) {
-            calendar.set(Calendar.DAY_OF_WEEK, d + 2);
-            currentWeekDays[d] = calendar.get(Calendar.DAY_OF_MONTH);
-        }
-
+    public void updateDate() {
         calendar.set(Calendar.DAY_OF_WEEK, 2);
         startDate = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH)) + "." + String.format("%02d", calendar.get(Calendar.MONTH) + 1);
         calendar.set(Calendar.DAY_OF_WEEK, 2 + 6);
         endDate = String.format("%02d", calendar.get(Calendar.DAY_OF_MONTH)) + "." + String.format("%02d", calendar.get(Calendar.MONTH) + 1);
 
         if (calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) {
-            changedWeek = 2;
+            week = 2;
             textViewCurWeek.setText(startDate + " - " + endDate + " нижняя неделя");
         } else {
             textViewCurWeek.setText(startDate + " - " + endDate + " верхняя неделя");
-            changedWeek = 1;
+            week = 1;
+        }
+
+        weekDays = new Integer[7];
+        for (int d = 0; d < 7; d++) {
+            calendar.set(Calendar.DAY_OF_WEEK, d + 2);
+            weekDays[d] = calendar.get(Calendar.DAY_OF_MONTH);
         }
 
         currentTab = pager.getCurrentItem();
         setTimetable();
     }
 
+
     // Обработка нажатий кнопок
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.buttonGroup:
-                if (changedGroup == 1) {
-                    changedGroup = 2;
+                if (group == 1) {
+                    group = 2;
                 } else {
-                    changedGroup = 1;
+                    group = 1;
                 }
 
-                buttonGroup.setText(changedGroup + " подгруппа");
-                prefEditor.putInt("changedGroup",changedGroup);
+                buttonGroup.setText(group + " подгруппа");
+                prefEditor.putInt("group", group);
                 prefEditor.apply();
 
                 currentTab = pager.getCurrentItem();
@@ -251,24 +236,18 @@ public class MainActivity extends AppCompatActivity {
                 break;
 
             case R.id.buttonToCurrentDate:
-                calendar = Calendar.getInstance();
-
-                changeWeek();
-
+                initializeDate();
+                setTimetable();
                 break;
 
             case R.id.buttonWeekUp:
                 calendar.add(Calendar.DAY_OF_YEAR, 7);
-
-                changeWeek();
-
+                updateDate();
                 break;
 
             case R.id.buttonWeekDown:
                 calendar.add(Calendar.DAY_OF_YEAR, -7);
-
-                changeWeek();
-
+                updateDate();
                 break;
 
             default:
