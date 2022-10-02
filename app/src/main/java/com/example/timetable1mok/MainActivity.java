@@ -1,11 +1,15 @@
 package com.example.timetable1mok;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +21,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,13 +30,14 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 public class MainActivity extends AppCompatActivity {
-    String DATABASE_FILE_NAME = "DATABASE";
+    //    String DATABASE_FILE_NAME = "DATABASE";
     String LogTag = "MyApp";
     String[] tabsName = {"ПН", "ВТ", "СР", "ЧТ", "ПТ"};
 
     SharedPreferences settings;
     SharedPreferences.Editor prefEditor;
 
+    TextView textViewTimer;
     TextView textViewCurWeek;
     Button buttonGroup;
     ViewPager2 pager;
@@ -44,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
     Integer week; // четная или нечетная неделя
     Integer currentDayNum; // день недели числом
     Integer[] weekDays; // список дней текущей недели
+
+    long curDateMillis;
+    Integer calls_type;
 
     String startDate;
     String endDate;
@@ -59,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         textViewCurWeek = findViewById(R.id.textViewCurWeek);
         buttonGroup = findViewById(R.id.buttonGroup);
+        textViewTimer = findViewById(R.id.textViewTimer);
 
         initializeDate();
 
@@ -72,7 +82,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void initializeDate() {
         calendar = Calendar.getInstance();
-
+        if (calendar.get(Calendar.HOUR_OF_DAY) > 18) {
+            calendar.add(Calendar.DAY_OF_YEAR, 1);
+        }
         Integer[] dayOfWeek = {123, 6, 0, 1, 2, 3, 4, 5};
         currentDayNum = dayOfWeek[calendar.get(Calendar.DAY_OF_WEEK)];
         if (currentDayNum < 5) {
@@ -100,6 +112,21 @@ public class MainActivity extends AppCompatActivity {
             calendar.set(Calendar.DAY_OF_WEEK, d + 2);
             weekDays[d] = calendar.get(Calendar.DAY_OF_MONTH);
         }
+
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        curDateMillis = calendar.getTimeInMillis();
+
+        for (int i = 0; i < 5; i++) {
+            if (currentDayNum == 0) {
+                calls_type = 0;
+            } else {
+                calls_type = 1;
+            }
+        }
+
     }
 
     public void getTimetable() {
@@ -157,9 +184,36 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
+            initializeCalls();
+            startTimer();
+
             setTimetable();
+
+
         } catch (Exception ex) {
             Log.e(LogTag, Log.getStackTraceString(ex));
+        }
+    }
+
+    MyTime[][] callsTime = new MyTime[2][11];
+
+    void initializeCalls() {
+        callsTime[0][0] = new MyTime();
+        callsTime[1][0] = new MyTime();
+        for (int i = 0; i < 2; i++) {
+            int k = 1;
+            for (int j = 0; j < (5 - i); j++) {
+                callsTime[i][k] = new MyTime(
+                        Integer.parseInt(calls[i][j].split("-")[0].split("\\.")[0]),
+                        Integer.parseInt(calls[i][j].split("-")[0].split("\\.")[1])
+                );
+
+                callsTime[i][k + 1] = new MyTime(
+                        Integer.parseInt(calls[i][j].split("-")[1].split("\\.")[0]),
+                        Integer.parseInt(calls[i][j].split("-")[1].split("\\.")[1])
+                );
+                k += 2;
+            }
         }
     }
 
@@ -178,17 +232,89 @@ public class MainActivity extends AppCompatActivity {
         tabLayoutMediator.attach();
 
         pager.setCurrentItem(currentTab, false);
+
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+
+//        Fragment myFragment = getSupportFragmentManager().findFragmentByTag("f" + pager.getCurrentItem());
+//
+//        myFragment.
+
     }
 
-//    Runnable runnable = new Runnable() {
-//        @Override
-//        public void run() {
-//            startTimer();
-//        }
-//    };
+    MyTime cur;
+    String label;
+    Handler handler = new Handler();
+
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+            cur = new MyTime(
+                    Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+                    Calendar.getInstance().get(Calendar.MINUTE),
+                    Calendar.getInstance().get(Calendar.SECOND)
+            );
+
+            if (currentDayNum != 5 && currentDayNum != 6) {
+                for (int i = 0; i < (10 - calls_type * 2); i++) {
+                    if (MyTime.isBetweenTimes(cur, callsTime[calls_type][i], callsTime[calls_type][i + 1])) {
+                        if (i % 2 != 0) {
+                            label = "До конца пары:\n";
+                        } else {
+                            label = "До начала пары:\n";
+                        }
+                        textViewTimer.setText(label + MyTime.subtractionTimesFormatString(callsTime[calls_type][i + 1], cur));
+                        break;
+                    }
+                }
+//                else {
+//                    cur = MyTime.subtractionTimes(cur, new MyTime(24, 0, 0));
+//                    label = "До начала пары:\n";
+//                    textViewTimer.setText(label + MyTime.subtractionTimesFormatString(callsTime[calls_type][1], cur));
+//                }
+            }
+            startTimer();
+
+
+//            cur.set(Calendar.HOUR_OF_DAY, Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
+//            cur.set(Calendar.MINUTE, Calendar.getInstance().get(Calendar.MINUTE));
+//            cur.set(Calendar.SECOND, Calendar.getInstance().get(Calendar.SECOND));
+
+//            cur.set(Calendar.HOUR_OF_DAY, Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
+//            cur.set(Calendar.MINUTE, Calendar.getInstance().get(Calendar.MINUTE));
+
+
+//            if (callsTime[0][curcallsTime].getTimeInMillis() > cur.getTimeInMillis()) {
+//                Date dateNow = new Date(curDateMillis + callsTime[0][curcallsTime].getTimeInMillis() - cur.getTimeInMillis());
+//                SimpleDateFormat formatForDateNow = new SimpleDateFormat("HH:mm:ss");
+//                textViewTimer.setText(formatForDateNow.format(dateNow));
+//                startTimer();
+//            } else {
+//                updateTimer();
+//            }
+
+        }
+    };
+
+    public void startTimer() {
+        handler.postDelayed(runnable, 250);
+    }
+
+//    int curcallsTime;
+
+//    public void updateTimer() {
+//        cur.set(Calendar.HOUR_OF_DAY, Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
+//        cur.set(Calendar.MINUTE, Calendar.getInstance().get(Calendar.MINUTE));
+//        cur.set(Calendar.SECOND, Calendar.getInstance().get(Calendar.SECOND));
 //
-//    public void startTimer() {
-//        handler.postDelayed(runnable, 1000);
+//        for (int i = 0; i < (10-calls_type*2); i++) {
+//            if (callsTime[calls_type][i].getTimeInMillis() > cur.getTimeInMillis()) {
+//                curcallsTime = i;
+//                startTimer();
+//                return;
+//            }
+//        }
+//
 //    }
 
 
@@ -216,6 +342,8 @@ public class MainActivity extends AppCompatActivity {
         setTimetable();
     }
 
+
+    boolean Test = true;
 
     // Обработка нажатий кнопок
     public void onClick(View view) {

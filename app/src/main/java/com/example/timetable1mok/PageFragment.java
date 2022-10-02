@@ -1,13 +1,16 @@
 package com.example.timetable1mok;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -39,7 +42,16 @@ public class PageFragment extends Fragment {
         return fragment;
     }
 
-    public PageFragment() {
+    public void setSelectedItem(boolean selectedItem) {
+        if (selectedItem) {
+//        LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (i + 1), "id", "com.example.timetable1mok"));
+
+            LinearLayout linearLayout = getView().findViewById(R.id.linearLayout1);
+            linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner_enable));
+        } else {
+            LinearLayout linearLayout = getView().findViewById(R.id.linearLayout1);
+            linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner));
+        }
     }
 
     @Override
@@ -56,6 +68,8 @@ public class PageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View result = inflater.inflate(R.layout.fragment_page, container, false);
         try {
+//            new ProgressTask().execute();
+
 //            Calendar cur = new GregorianCalendar();
 //            cur.set(Calendar.HOUR_OF_DAY, Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
 //            cur.set(Calendar.MINUTE, Calendar.getInstance().get(Calendar.MINUTE));
@@ -115,4 +129,28 @@ public class PageFragment extends Fragment {
         }
         return result;
     }
+
+//    class ProgressTask extends AsyncTask<Void, Integer, Void> {
+//        @Override
+//        protected Void doInBackground(Void... unused) {
+//            for (int i = 0; i < integers.length; i++) {
+//
+//                publishProgress(i);
+//                SystemClock.sleep(400);
+//            }
+//            return null;
+//        }
+//
+//        @Override
+//        protected void onProgressUpdate(Integer... items) {
+//            indicatorBar.setProgress(items[0] + 1);
+//            statusView.setText("Статус: " + String.valueOf(items[0] + 1));
+//        }
+//
+//        @Override
+//        protected void onPostExecute(Void unused) {
+//            Toast.makeText(getActivity(), "Задача завершена", Toast.LENGTH_SHORT)
+//                    .show();
+//        }
+//    }
 }
