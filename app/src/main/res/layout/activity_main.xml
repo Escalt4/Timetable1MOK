@@ -55,39 +55,17 @@
                     android:gravity="center"
                     android:orientation="vertical">
 
-                    <!--                    <Button-->
-                    <!--                        android:id="@+id/buttonToCurrentDate"-->
-                    <!--                        android:layout_width="match_parent"-->
-                    <!--                        android:layout_height="wrap_content"-->
-                    <!--                        android:layout_gravity="center"-->
-                    <!--                        android:gravity="center"-->
-                    <!--                        android:insetLeft="6dp"-->
-                    <!--                        android:insetRight="6dp"-->
-                    <!--                        android:onClick="onClick"-->
-                    <!--                        android:text="К текущей дате"-->
-                    <!--                        android:textAllCaps="false"-->
-                    <!--                        android:textSize="16sp" />-->
-
                     <TextView
                         android:id="@+id/textViewTimer"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
-                        android:text=""
+                        android:text="Сейчас нет пар"
                         android:textColor="?attr/colorPrimary"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
-                    <!--            <TextView-->
-                    <!--                android:layout_width="wrap_content"-->
-                    <!--                android:layout_height="wrap_content"-->
-                    <!--                android:layout_gravity="center"-->
-                    <!--                android:gravity="center"-->
-                    <!--                android:text="34:37"-->
-                    <!--                android:textColor="@color/black"-->
-                    <!--                android:textSize="22sp"-->
-                    <!--                android:textStyle="bold" />-->
 
                 </LinearLayout>
 

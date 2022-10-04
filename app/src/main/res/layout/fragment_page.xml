@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,19 +8,10 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/textViewData1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="10dp"
-            android:textColor="?attr/colorPrimary"
-            android:textSize="8sp"
-            android:textStyle="bold" />
-
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingTop="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -36,10 +26,24 @@
                     android:layout_marginVertical="3dp"
                     android:background="@drawable/rounded_corner"
                     android:orientation="horizontal"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:visibility="visible">
 
+
+                    <TextView
+                        android:id="@+id/textViewNumder1"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="36sp"
+                        android:textStyle="bold" />
+
                     <TableLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1">
@@ -47,15 +51,23 @@
                         <TableRow>
 
                             <TextView
-                                android:id="@+id/textViewNumder1"
-                                android:layout_width="80dp"
-                                android:layout_height="match_parent"
+                                android:id="@+id/textViewSubject1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:gravity="center"
+                                android:ellipsize="end"
+                                android:gravity="top"
+                                android:maxLines="2"
+                                android:minLines="2"
+                                android:paddingBottom="5dp"
                                 android:text=""
                                 android:textColor="?attr/colorPrimary"
-                                android:textSize="36sp"
+                                android:textSize="16sp"
                                 android:textStyle="bold" />
+
+                        </TableRow>
+
+                        <TableRow>
 
                             <TextView
                                 android:id="@+id/textViewTime1"
@@ -63,33 +75,10 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
+                                android:minLines="1"
+                                android:paddingBottom="1dp"
                                 android:text=""
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-                        </TableRow>
-
-                    </TableLayout>
-
-                    <TableLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginHorizontal="5dp"
-                        android:layout_marginVertical="3dp"
-                        android:layout_weight="1">
-
-                        <TableRow>
-
-                            <TextView
-                                android:id="@+id/textViewSubject1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center_vertical"
-                                android:text=""
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                         </TableRow>
@@ -98,15 +87,17 @@
 
                             <TextView
                                 android:id="@+id/textViewInfo1"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="90dp"
+                                android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
+                                android:minLines="1"
                                 android:text=""
-                                android:textSize="16sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                         </TableRow>
+
 
                     </TableLayout>
 
@@ -119,10 +110,25 @@
                     android:layout_marginHorizontal="5dp"
                     android:layout_marginVertical="3dp"
                     android:background="@drawable/rounded_corner"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:visibility="visible">
+
+
+                    <TextView
+                        android:id="@+id/textViewNumder2"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="36sp"
+                        android:textStyle="bold" />
 
                     <TableLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1">
@@ -130,15 +136,23 @@
                         <TableRow>
 
                             <TextView
-                                android:id="@+id/textViewNumder2"
-                                android:layout_width="80dp"
-                                android:layout_height="match_parent"
+                                android:id="@+id/textViewSubject2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:gravity="center"
+                                android:ellipsize="end"
+                                android:gravity="top"
+                                android:maxLines="2"
+                                android:minLines="2"
+                                android:paddingBottom="5dp"
                                 android:text=""
                                 android:textColor="?attr/colorPrimary"
-                                android:textSize="32sp"
+                                android:textSize="16sp"
                                 android:textStyle="bold" />
+
+                        </TableRow>
+
+                        <TableRow>
 
                             <TextView
                                 android:id="@+id/textViewTime2"
@@ -146,33 +160,10 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
+                                android:minLines="1"
+                                android:paddingBottom="1dp"
                                 android:text=""
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-                        </TableRow>
-
-                    </TableLayout>
-
-                    <TableLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginHorizontal="5dp"
-                        android:layout_marginVertical="3dp"
-                        android:layout_weight="1">
-
-                        <TableRow>
-
-                            <TextView
-                                android:id="@+id/textViewSubject2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center_vertical"
-                                android:text=""
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                         </TableRow>
@@ -181,15 +172,17 @@
 
                             <TextView
                                 android:id="@+id/textViewInfo2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="90dp"
+                                android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
+                                android:minLines="1"
                                 android:text=""
-                                android:textSize="16sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                         </TableRow>
+
 
                     </TableLayout>
 
@@ -202,10 +195,25 @@
                     android:layout_marginHorizontal="5dp"
                     android:layout_marginVertical="3dp"
                     android:background="@drawable/rounded_corner"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:visibility="visible">
+
+
+                    <TextView
+                        android:id="@+id/textViewNumder3"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="36sp"
+                        android:textStyle="bold" />
 
                     <TableLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1">
@@ -213,15 +221,23 @@
                         <TableRow>
 
                             <TextView
-                                android:id="@+id/textViewNumder3"
-                                android:layout_width="80dp"
-                                android:layout_height="match_parent"
+                                android:id="@+id/textViewSubject3"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:gravity="center"
+                                android:ellipsize="end"
+                                android:gravity="top"
+                                android:maxLines="2"
+                                android:minLines="2"
+                                android:paddingBottom="5dp"
                                 android:text=""
                                 android:textColor="?attr/colorPrimary"
-                                android:textSize="32sp"
+                                android:textSize="16sp"
                                 android:textStyle="bold" />
+
+                        </TableRow>
+
+                        <TableRow>
 
                             <TextView
                                 android:id="@+id/textViewTime3"
@@ -229,33 +245,10 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
+                                android:minLines="1"
+                                android:paddingBottom="1dp"
                                 android:text=""
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-                        </TableRow>
-
-                    </TableLayout>
-
-                    <TableLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginHorizontal="5dp"
-                        android:layout_marginVertical="3dp"
-                        android:layout_weight="1">
-
-                        <TableRow>
-
-                            <TextView
-                                android:id="@+id/textViewSubject3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center_vertical"
-                                android:text=""
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                         </TableRow>
@@ -264,15 +257,17 @@
 
                             <TextView
                                 android:id="@+id/textViewInfo3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="90dp"
+                                android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
+                                android:minLines="1"
                                 android:text=""
-                                android:textSize="16sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                         </TableRow>
+
 
                     </TableLayout>
 
@@ -285,10 +280,25 @@
                     android:layout_marginHorizontal="5dp"
                     android:layout_marginVertical="3dp"
                     android:background="@drawable/rounded_corner"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:visibility="visible">
+
+
+                    <TextView
+                        android:id="@+id/textViewNumder4"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="36sp"
+                        android:textStyle="bold" />
 
                     <TableLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1">
@@ -296,15 +306,23 @@
                         <TableRow>
 
                             <TextView
-                                android:id="@+id/textViewNumder4"
-                                android:layout_width="80dp"
-                                android:layout_height="match_parent"
+                                android:id="@+id/textViewSubject4"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:gravity="center"
+                                android:ellipsize="end"
+                                android:gravity="top"
+                                android:maxLines="2"
+                                android:minLines="2"
+                                android:paddingBottom="5dp"
                                 android:text=""
                                 android:textColor="?attr/colorPrimary"
-                                android:textSize="32sp"
+                                android:textSize="16sp"
                                 android:textStyle="bold" />
+
+                        </TableRow>
+
+                        <TableRow>
 
                             <TextView
                                 android:id="@+id/textViewTime4"
@@ -312,33 +330,10 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
+                                android:minLines="1"
+                                android:paddingBottom="1dp"
                                 android:text=""
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-                        </TableRow>
-
-                    </TableLayout>
-
-                    <TableLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginHorizontal="5dp"
-                        android:layout_marginVertical="3dp"
-                        android:layout_weight="1">
-
-                        <TableRow>
-
-                            <TextView
-                                android:id="@+id/textViewSubject4"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center_vertical"
-                                android:text=""
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                         </TableRow>
@@ -347,15 +342,17 @@
 
                             <TextView
                                 android:id="@+id/textViewInfo4"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="90dp"
+                                android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
+                                android:minLines="1"
                                 android:text=""
-                                android:textSize="16sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                         </TableRow>
+
 
                     </TableLayout>
 
@@ -368,10 +365,25 @@
                     android:layout_marginHorizontal="5dp"
                     android:layout_marginVertical="3dp"
                     android:background="@drawable/rounded_corner"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:visibility="visible">
+
+
+                    <TextView
+                        android:id="@+id/textViewNumder5"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="36sp"
+                        android:textStyle="bold" />
 
                     <TableLayout
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1">
@@ -379,15 +391,23 @@
                         <TableRow>
 
                             <TextView
-                                android:id="@+id/textViewNumder5"
-                                android:layout_width="80dp"
-                                android:layout_height="match_parent"
+                                android:id="@+id/textViewSubject5"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:gravity="center"
+                                android:ellipsize="end"
+                                android:gravity="top"
+                                android:maxLines="2"
+                                android:minLines="2"
+                                android:paddingBottom="5dp"
                                 android:text=""
                                 android:textColor="?attr/colorPrimary"
-                                android:textSize="32sp"
+                                android:textSize="16sp"
                                 android:textStyle="bold" />
+
+                        </TableRow>
+
+                        <TableRow>
 
                             <TextView
                                 android:id="@+id/textViewTime5"
@@ -395,33 +415,10 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
+                                android:minLines="1"
+                                android:paddingBottom="1dp"
                                 android:text=""
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-                        </TableRow>
-
-                    </TableLayout>
-
-                    <TableLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginHorizontal="5dp"
-                        android:layout_marginVertical="3dp"
-                        android:layout_weight="1">
-
-                        <TableRow>
-
-                            <TextView
-                                android:id="@+id/textViewSubject5"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:gravity="center_vertical"
-                                android:text=""
-                                android:textColor="?attr/colorPrimary"
-                                android:textSize="16sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                         </TableRow>
@@ -430,20 +427,21 @@
 
                             <TextView
                                 android:id="@+id/textViewInfo5"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
+                                android:layout_width="90dp"
+                                android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
+                                android:minLines="1"
                                 android:text=""
-                                android:textSize="16sp"
+                                android:textSize="14sp"
                                 android:textStyle="bold" />
 
                         </TableRow>
 
+
                     </TableLayout>
 
                 </LinearLayout>
-
             </LinearLayout>
 
         </ScrollView>

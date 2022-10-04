@@ -93,7 +93,7 @@ public class PageFragment extends Fragment {
                 textViewNumder.setText("" + (i + 1));
 
                 TextView textViewTime = result.findViewById(getResources().getIdentifier("textViewTime" + (i + 1), "id", "com.example.timetable1mok"));
-                textViewTime.setText(calls[calls_type][i].replace("-", "\n"));
+                textViewTime.setText(calls[calls_type][i].replace("-", " - "));
 
                 if (timetable[pageNumber][group - 1][week - 1][i][0] == null) {
                     if (i >= cutoff) {
@@ -101,6 +101,9 @@ public class PageFragment extends Fragment {
                         linearLayout.setVisibility(View.GONE);
                     }
                 } else {
+                    textViewTime.setText(calls[calls_type][i].replace("-", " - ")
+                            + " | " + lessonsType[Integer.parseInt(timetable[pageNumber][group - 1][week - 1][i][3])]);
+
 //                    Calendar start1 = new GregorianCalendar();
 //                    start1.set(Calendar.HOUR_OF_DAY, Integer.parseInt(calls[calls_type][i].split("-")[0].split("\\.")[0]));
 //                    start1.set(Calendar.MINUTE, Integer.parseInt(calls[calls_type][i].split("-")[0].split("\\.")[1]));
@@ -119,8 +122,7 @@ public class PageFragment extends Fragment {
 
                     TextView textViewInfo = result.findViewById(getResources().getIdentifier("textViewInfo" + (i + 1), "id", "com.example.timetable1mok"));
                     textViewInfo.setText(timetable[pageNumber][group - 1][week - 1][i][1] + " | " +
-                            timetable[pageNumber][group - 1][week - 1][i][2] + "\n" +
-                            lessonsType[Integer.parseInt(timetable[pageNumber][group - 1][week - 1][i][3])]);
+                            timetable[pageNumber][group - 1][week - 1][i][2]);
                 }
             }
         } catch (Exception ex) {
