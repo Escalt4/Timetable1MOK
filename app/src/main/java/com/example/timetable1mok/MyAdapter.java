@@ -11,6 +11,7 @@ public class MyAdapter extends FragmentStateAdapter {
     private Integer group;
     private Integer week;
 
+
     public MyAdapter(FragmentActivity fragmentActivity, String[][][][][] timetable, String[][] calls, Integer group, Integer week) {
         super(fragmentActivity);
         this.timetable = timetable;
@@ -18,6 +19,7 @@ public class MyAdapter extends FragmentStateAdapter {
         this.group = group;
         this.week = week;
     }
+
 
     @NonNull
     @Override

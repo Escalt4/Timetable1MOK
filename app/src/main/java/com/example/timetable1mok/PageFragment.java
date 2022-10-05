@@ -1,5 +1,7 @@
 package com.example.timetable1mok;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,11 +17,16 @@ import android.widget.Toast;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 public class PageFragment extends Fragment {
+    String LogTag = "MyApp";
     String[] lessonsType = {"Лекция", "Практика"};
 
     private int pageNumber;
@@ -27,8 +34,7 @@ public class PageFragment extends Fragment {
     private String[][] calls;
     private Integer group;
     private Integer week;
-
-    String LogTag = "MyApp";
+    private View result;
 
     public static PageFragment newInstance(int page, String[][][][][] timetable, String[][] calls, Integer group, Integer week) {
         PageFragment fragment = new PageFragment();
@@ -42,17 +48,19 @@ public class PageFragment extends Fragment {
         return fragment;
     }
 
-    public void setSelectedItem(boolean selectedItem) {
-        if (selectedItem) {
-//        LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (i + 1), "id", "com.example.timetable1mok"));
 
-            LinearLayout linearLayout = getView().findViewById(R.id.linearLayout1);
-            linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner_enable));
-        } else {
-            LinearLayout linearLayout = getView().findViewById(R.id.linearLayout1);
-            linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner));
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+        if (event.getCurrentDayNum() == pageNumber) {
+            LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (event.getPairNum()), "id", "com.example.timetable1mok"));
+            if (event.getState()) {
+                linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner_enable));
+            } else {
+                linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner));
+            }
         }
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,18 +70,22 @@ public class PageFragment extends Fragment {
         calls = (String[][]) getArguments().getSerializable("calls");
         group = getArguments().getInt("group");
         week = getArguments().getInt("week");
+
+        EventBus.getDefault().register(this);
     }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View result = inflater.inflate(R.layout.fragment_page, container, false);
+        result = inflater.inflate(R.layout.fragment_page, container, false);
         try {
-//            new ProgressTask().execute();
-
-//            Calendar cur = new GregorianCalendar();
-//            cur.set(Calendar.HOUR_OF_DAY, Calendar.getInstance().get(Calendar.HOUR_OF_DAY));
-//            cur.set(Calendar.MINUTE, Calendar.getInstance().get(Calendar.MINUTE));
-
             for (int i = 0; i < 5; i++) {
                 Integer calls_type;
                 if (pageNumber == 0) {
@@ -92,8 +104,8 @@ public class PageFragment extends Fragment {
                 TextView textViewNumder = result.findViewById(getResources().getIdentifier("textViewNumder" + (i + 1), "id", "com.example.timetable1mok"));
                 textViewNumder.setText("" + (i + 1));
 
-                TextView textViewTime = result.findViewById(getResources().getIdentifier("textViewTime" + (i + 1), "id", "com.example.timetable1mok"));
-                textViewTime.setText(calls[calls_type][i].replace("-", " - "));
+//                TextView textViewTime = result.findViewById(getResources().getIdentifier("textViewTime" + (i + 1), "id", "com.example.timetable1mok"));
+//                textViewTime.setText(calls[calls_type][i].replace(".", ":").replace("-", " - "));
 
                 if (timetable[pageNumber][group - 1][week - 1][i][0] == null) {
                     if (i >= cutoff) {
@@ -101,7 +113,8 @@ public class PageFragment extends Fragment {
                         linearLayout.setVisibility(View.GONE);
                     }
                 } else {
-                    textViewTime.setText(calls[calls_type][i].replace("-", " - ")
+                    TextView textViewTime = result.findViewById(getResources().getIdentifier("textViewTime" + (i + 1), "id", "com.example.timetable1mok"));
+                    textViewTime.setText(calls[calls_type][i].replace(".", ":").replace("-", " - ")
                             + " | " + lessonsType[Integer.parseInt(timetable[pageNumber][group - 1][week - 1][i][3])]);
 
 //                    Calendar start1 = new GregorianCalendar();
