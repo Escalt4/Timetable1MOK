@@ -348,20 +348,19 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < (10 - calls_type * 2) - 1; i++) {
             if (MyTime.isBetweenTimes(cur, callsTime[calls_type][i], callsTime[calls_type][i + 1])) {
-                if (timetable[currentDayNum][group - 1][week - 1][(int)(i / 2)][0] != null) {
-                    if (i % 2 == 0) {
-                        label = "До конца пары:\n";
-                        curPair = i / 2;
-                    } else {
-                        curPair = 0;
-                        label = "До начала пары:\n";
-                    }
-                    timeStart = callsTime[calls_type][i];
-                    timeEnd = callsTime[calls_type][i + 1];
-                    started = true;
-                    doCicleTimer();
-                    break;
+                if (i % 2 == 0) {
+                    label = "До конца пары:\n";
+                    curPair = i / 2 + 1;
+                } else {
+                    curPair = 0;
+                    label = "До начала пары:\n";
                 }
+                timeStart = callsTime[calls_type][i];
+                timeEnd = callsTime[calls_type][i + 1];
+                started = true;
+                doCicleTimer();
+                break;
+
             }
         }
 
