@@ -1,7 +1,6 @@
 package com.example.timetable1mok;
 
 public class MyTime {
-
     Integer hour = 0;
     Integer minute = 0;
     Integer second = 0;
@@ -44,6 +43,24 @@ public class MyTime {
         return new MyTime(time3Day, time3Hour, time3Minute, time3Second);
     }
 
+    static public String timesFormatString(MyTime time0) {
+        String time = "";
+
+        if ( time0.getHour() < 10) {
+            time += "0";
+        }
+        time +=  time0.getHour() + ":";
+        if ( time0.getMinute() < 10) {
+            time += "0";
+        }
+        time +=  time0.getMinute() + ":";
+        if (time0.getSecond() < 10) {
+            time += "0";
+        }
+        time += time0.getSecond();
+
+        return time;
+    }
 
     static public String subtractionTimesFormatString(MyTime time1, MyTime time2) {
         Integer second1 = time1.getDay() * 60 * 60 * 24 + time1.getHour() * 60 * 60 + time1.getMinute() * 60 + time1.getSecond();

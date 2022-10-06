@@ -52,7 +52,11 @@ public class MainActivity extends AppCompatActivity {
     String[][][][][] timetable;
     String[][] calls;
     MyTime[][] callsTime = new MyTime[2][11];
-    MyTime[][][] callSchedule;
+
+    MyTime[][] baseCallMonday;
+    MyTime[][] baseCallOther;
+
+    MyTime[][][][][] callSchedule;
 
     Calendar calendar;
     Integer group; // выбраная группа
@@ -83,9 +87,10 @@ public class MainActivity extends AppCompatActivity {
         settings = getSharedPreferences("Settings", MODE_PRIVATE);
         prefEditor = settings.edit();
         group = settings.getInt("group", 2);
-        buttonGroup.setText(group + " подгруппа");
+        buttonGroup.setText(group + "");
 
         // получение расписания из файла
+        getCalls();
         getTimetable();
     }
 
@@ -170,6 +175,39 @@ public class MainActivity extends AppCompatActivity {
         return calls;
     }
 
+
+    // получение расписания звонков из файла
+    public void getCalls() {
+        try {
+            InputStream inputStream = getResources().openRawResource(R.raw.calls_1mok);
+
+            byte[] buffer = new byte[inputStream.available()];
+            inputStream.read(buffer);
+            inputStream.close();
+            String text = new String(buffer);
+
+            String[] callsBlocks = text.split("========");
+
+            String[] Monday = callsBlocks[0].split("\n");
+            String[] Other = callsBlocks[1].split("\n");
+
+            // номер пары; время начала или конца
+            baseCallMonday = new MyTime[5][2];
+            baseCallOther = new MyTime[5][2];
+
+            for (int i = 0; i < Monday.length; i++) {
+                baseCallMonday[i] = splitCallsString(Monday[i]);
+            }
+            for (int i = 0; i < Other.length; i++) {
+                baseCallOther[i] = splitCallsString(Other[i]);
+            }
+
+        } catch (Exception ex) {
+            Log.e(LogTag, Log.getStackTraceString(ex));
+        }
+    }
+
+
     // получение расписания из файла
     public void getTimetable() {
         try {
@@ -182,11 +220,8 @@ public class MainActivity extends AppCompatActivity {
 
             String[] timetableBlocks = text.split("========");
 
+            //
             timetable = new String[5][2][2][5][4];
-            callSchedule = new MyTime[2][5][2];
-            calls = new String[2][5];
-
-            calls[1][4] = "00.00-00.00";
 
             for (int i = 0; i < timetableBlocks.length; i++) {
                 String[] blocksPart = timetableBlocks[i].split("--------");
@@ -197,12 +232,12 @@ public class MainActivity extends AppCompatActivity {
 
                         if (j == 1) {
                             for (int k = 1; k < strings.length; k++) {
-                                callSchedule[0][k - 1] = splitCallsString(strings[k]);
+//                                callSchedule[0][k - 1] = splitCallsString(strings[k]);
                                 calls[0][k - 1] = strings[k].replace("\"", "").replace("\r", "").replace("\n", "");
                             }
                         } else {
                             for (int k = 1; k < strings.length; k++) {
-                                callSchedule[1][k - 1] = splitCallsString(strings[k]);
+//                                callSchedule[1][k - 1] = splitCallsString(strings[k]);
                                 calls[1][k - 1] = strings[k].replace("\"", "").replace("\r", "").replace("\n", "");
                             }
                         }
@@ -219,8 +254,9 @@ public class MainActivity extends AppCompatActivity {
                                 int groop_ = Integer.parseInt(Character.toString(temp1[q].charAt(0))) - 1;
                                 int week_ = Integer.parseInt(Character.toString(temp1[q].charAt(1))) - 1;
                                 int day_ = Integer.parseInt(strings[k + 1].replace("\r", "")) - 1;
-
+                                Log.d(LogTag, day_ + " ");
                                 for (int w = 0; w < 4; w++) {
+                                    callSchedule[i - 1][groop_][week_][day_] = splitCallsString(calls[week_][i - 1]);
                                     timetable[i - 1][groop_][week_][day_][w] = strings[k + 2 + w].replace("\r", "").replace("\n", "");
                                 }
                             }
@@ -228,6 +264,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
+            Log.d(LogTag, MyTime.timesFormatString(callSchedule[0][1][1][1][0]));
+            Log.d(LogTag, MyTime.timesFormatString(callSchedule[0][1][1][1][1]));
 
             setTimetable();
 
@@ -380,7 +418,7 @@ public class MainActivity extends AppCompatActivity {
                     group = 1;
                 }
 
-                buttonGroup.setText(group + " подгруппа");
+                buttonGroup.setText(group + "");
                 currentTab = pager.getCurrentItem();
                 setTimetable();
                 break;
