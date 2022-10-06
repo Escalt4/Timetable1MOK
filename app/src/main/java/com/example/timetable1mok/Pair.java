@@ -9,9 +9,10 @@ public class Pair {
     Integer cabinetNum;     // номер кабинета
     String teacher;         // имя преподавателя
     Integer typePair;       // тип пары (лекция / практика)
+    MyTime timeStart;       // время начала пары
+    MyTime timeEnd;         // время окончания пары
 
-
-    public Pair(Integer dayNum, Integer group, Integer typeWeek, Integer pairNum, String subject, Integer cabinetNum, String teacher, Integer typePair) {
+    public Pair(Integer dayNum, Integer group, Integer typeWeek, Integer pairNum, String subject, Integer cabinetNum, String teacher, Integer typePair, MyTime timeStart, MyTime timeEnd) {
         this.dayNum = dayNum;
         this.group = group;
         this.typeWeek = typeWeek;
@@ -20,6 +21,8 @@ public class Pair {
         this.cabinetNum = cabinetNum;
         this.teacher = teacher;
         this.typePair = typePair;
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
     }
 
     public Integer getDayNum() {
@@ -52,5 +55,13 @@ public class Pair {
 
     public Integer getTypePair() {
         return typePair;
+    }
+
+    public MyTime getTimeStart() {
+        return timeStart;
+    }
+
+    public MyTime getTimeEnd() {
+        return timeEnd;
     }
 }
