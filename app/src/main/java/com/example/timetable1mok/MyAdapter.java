@@ -6,23 +6,16 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class MyAdapter extends FragmentStateAdapter {
-    private Pair[][][][] timetable;
-    private Integer group;
-    private Integer week;
 
-
-    public MyAdapter(FragmentActivity fragmentActivity, Pair[][][][] timetable, Integer group, Integer week) {
+    public MyAdapter(FragmentActivity fragmentActivity) {
         super(fragmentActivity);
-        this.timetable = timetable;
-        this.group = group;
-        this.week = week;
     }
 
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return PageFragment.newInstance(position, timetable, group, week);
+        return PageFragment.newInstance(position);
     }
 
     @Override

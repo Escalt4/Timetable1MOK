@@ -1,26 +1,14 @@
 package com.example.timetable1mok;
 
 public class Pair {
-    //    Integer dayNum;         // номер дня недели
-//    Integer group;          // группа
-//    Integer typeWeek;       // тип недели (верхняя / нижняя)
-//    Integer pairNum;        // какая пара по счету
     String subject;         // название предмета
-    String cabinetNum;     // номер кабинета
+    String cabinetNum;      // номер кабинета
     String teacher;         // имя преподавателя
     Integer typePair;       // тип пары (лекция / практика)
     MyTime timeStart;       // время начала пары
     MyTime timeEnd;         // время окончания пары
 
-    //    Boolean exists;         // существует ли пара
-    public Pair() {
-    }
-
     public Pair(String subject, String cabinetNum, String teacher, Integer typePair, MyTime timeStart, MyTime timeEnd) {
-//        this.dayNum = dayNum;
-//        this.group = group;
-//        this.typeWeek = typeWeek;
-//        this.pairNum = pairNum;
         this.subject = subject;
         this.cabinetNum = cabinetNum;
         this.teacher = teacher;
@@ -28,25 +16,6 @@ public class Pair {
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
     }
-//    public Pair(Boolean exists) {
-//        this.exists = exists;
-//    }
-
-//    public Integer getDayNum() {
-//        return dayNum;
-//    }
-//
-//    public Integer getGroup() {
-//        return group;
-//    }
-//
-//    public Integer getTypeWeek() {
-//        return typeWeek;
-//    }
-//
-//    public Integer getPairNum() {
-//        return pairNum;
-//    }
 
     public String getSubject() {
         return subject;
@@ -64,6 +33,16 @@ public class Pair {
         return typePair;
     }
 
+    public String getTypePairString() {
+        if (typePair == 0) {
+            return "Лекция";
+        }
+        if (typePair == 1) {
+            return "Практика";
+        }
+        return "";
+    }
+
     public MyTime getTimeStart() {
         return timeStart;
     }
@@ -72,7 +51,21 @@ public class Pair {
         return timeEnd;
     }
 
-//    public Boolean getExists() {
-//        return exists;
-//    }
+    public String getTimes() {
+        String time = "";
+
+        time += timeStart.getHour() + ":";
+        if (timeStart.getMinute() < 10){
+            time += "0";
+        }
+        time += timeStart.getMinute() + " - ";
+
+        time += timeEnd.getHour() + ":";
+        if (timeEnd.getMinute() < 10){
+            time += "0";
+        }
+        time += timeEnd.getMinute();
+
+        return time;
+    }
 }

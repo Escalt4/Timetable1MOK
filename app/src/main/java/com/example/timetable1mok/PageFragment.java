@@ -17,38 +17,28 @@ import org.greenrobot.eventbus.ThreadMode;
 
 public class PageFragment extends Fragment {
     String LogTag = "MyApp";
-    String[] lessonsType = {"Лекция", "Практика"};
 
     private int pageNumber;
     private Pair[][][][] timetable;
     private Integer group;
     private Integer week;
+    private Integer highlightDay;
+    private Integer highlightPair;
     private View result;
 
-
-    public static PageFragment newInstance(int page, Pair[][][][] timetable, Integer group, Integer week) {
+    public static PageFragment newInstance(int page) {
         PageFragment fragment = new PageFragment();
         Bundle args = new Bundle();
         args.putInt("num", page);
-        args.putSerializable("timetable", timetable);
-        args.putInt("group", group);
-        args.putInt("week", week);
         fragment.setArguments(args);
         return fragment;
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pageNumber = getArguments() != null ? getArguments().getInt("num") : 1;
-        timetable = (Pair[][][][]) getArguments().getSerializable("timetable");
-        group = getArguments().getInt("group");
-        week = getArguments().getInt("week");
-
-        EventBus.getDefault().register(this);
     }
-
 
     @Override
     public void onDestroy() {
@@ -56,66 +46,55 @@ public class PageFragment extends Fragment {
         EventBus.getDefault().unregister(this);
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         result = inflater.inflate(R.layout.fragment_page, container, false);
-        try {
-            for (int i = 0; i < 5; i++) {
-                Integer calls_type;
-                if (pageNumber == 0) {
-                    calls_type = 0;
-                } else {
-                    calls_type = 1;
-                }
 
-                Integer cutoff = 0;
-                for (int j = 4; j > -1; j--) {
-                    if (timetable[pageNumber][group - 1][week - 1][j][0] != null && j > cutoff) {
-                        cutoff = j;
-                    }
-                }
+        EventBus.getDefault().register(this);
 
-                TextView textViewNumder = result.findViewById(getResources().getIdentifier("textViewNumder" + (i + 1), "id", "com.example.timetable1mok"));
-                textViewNumder.setText("" + (i + 1));
-
-//                TextView textViewTime = result.findViewById(getResources().getIdentifier("textViewTime" + (i + 1), "id", "com.example.timetable1mok"));
-//                textViewTime.setText(calls[calls_type][i].replace(".", ":").replace("-", " - "));
-
-                if (timetable[pageNumber][group - 1][week - 1][i][0] == null) {
-                    if (i >= cutoff) {
-                        LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (i + 1), "id", "com.example.timetable1mok"));
-                        linearLayout.setVisibility(View.GONE);
-                    }
-                } else {
-                    TextView textViewTime = result.findViewById(getResources().getIdentifier("textViewTime" + (i + 1), "id", "com.example.timetable1mok"));
-                    textViewTime.setText("● "+calls[calls_type][i].replace(".", ":").replace("-", " - ")
-                            + " | " + lessonsType[Integer.parseInt(timetable[pageNumber][group - 1][week - 1][i][3])]);
-
-                    TextView textViewSubject = result.findViewById(getResources().getIdentifier("textViewSubject" + (i + 1), "id", "com.example.timetable1mok"));
-                    textViewSubject.setText(timetable[pageNumber][group - 1][week - 1][i][0]);
-
-                    TextView textViewInfo = result.findViewById(getResources().getIdentifier("textViewInfo" + (i + 1), "id", "com.example.timetable1mok"));
-                    textViewInfo.setText("● "+timetable[pageNumber][group - 1][week - 1][i][1] + " | " +
-                            timetable[pageNumber][group - 1][week - 1][i][2]);
-                }
-            }
-        } catch (Exception ex) {
-            Log.e(LogTag, ex.getMessage());
-            Log.e(LogTag, Log.getStackTraceString(ex));
-        }
         return result;
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onMessageEvent(MessageEvent event) {
-        if (event.getCurrentDayNum() == pageNumber) {
-            LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (event.getPairNum()), "id", "com.example.timetable1mok"));
-            if (event.getState()) {
-                linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner_enable));
-            } else {
-                linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner));
+        timetable = event.getTimetable();
+        group = event.getGroup();
+        week = event.getWeek();
+        highlightDay = event.getHighlightDay();
+        highlightPair = event.getHighlightPair();
+
+        updateTimetable();
+    }
+
+    public void updateTimetable() {
+        try {
+            for (int i = 0; i < 5; i++) {
+                TextView textViewNumder = result.findViewById(getResources().getIdentifier("textViewNumder" + (i + 1), "id", getActivity().getPackageName()));
+                textViewNumder.setText(String.valueOf(i + 1));
+
+                LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (i + 1), "id", getActivity().getPackageName()));
+                if (timetable[pageNumber][group - 1][week - 1][i] == null) {
+                    linearLayout.setVisibility(View.INVISIBLE);
+                } else {
+                    linearLayout.setVisibility(View.VISIBLE);
+                    linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner));
+
+                    if (highlightDay == pageNumber && highlightPair == i) {
+                        linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner_enable));
+                    }
+
+                    TextView textViewSubject = result.findViewById(getResources().getIdentifier("textViewSubject" + (i + 1), "id", getActivity().getPackageName()));
+                    textViewSubject.setText(timetable[pageNumber][group - 1][week - 1][i].getSubject());
+
+                    TextView textViewInfo1 = result.findViewById(getResources().getIdentifier("textViewInfo1" + (i + 1), "id", getActivity().getPackageName()));
+                    textViewInfo1.setText("● " + timetable[pageNumber][group - 1][week - 1][i].getTimes() + " | " + timetable[pageNumber][group - 1][week - 1][i].getTypePairString());
+
+                    TextView textViewInfo2 = result.findViewById(getResources().getIdentifier("textViewInfo2" + (i + 1), "id", getActivity().getPackageName()));
+                    textViewInfo2.setText("● " + timetable[pageNumber][group - 1][week - 1][i].getCabinetNum() + " | " + timetable[pageNumber][group - 1][week - 1][i].getTeacher());
+                }
             }
+        } catch (Exception ex) {
+            Log.e(LogTag, Log.getStackTraceString(ex));
         }
     }
 

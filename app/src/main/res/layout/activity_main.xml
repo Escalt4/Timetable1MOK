@@ -237,6 +237,7 @@
                         android:id="@+id/buttonToCurrentDate"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
+                        android:enabled="false"
                         android:gravity="center"
                         android:insetLeft="6dp"
                         android:insetRight="6dp"
