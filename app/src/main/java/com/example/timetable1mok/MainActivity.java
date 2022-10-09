@@ -49,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
     Button buttonToCurrentDate;
     ViewPager2 pager;
 
-    Pair[][][][] basicTimetable;
-    MyTime[][][] basicCallsSchedule;
+    Pair[][][][] timetable;
+    MyTime[][][] callsSchedule;
 
     Calendar calendar;
     Integer group; // выбраная группа
@@ -86,43 +86,11 @@ public class MainActivity extends AppCompatActivity {
         // получение расписания из файла
         getCalls();
         getTimetable();
-
-//        // создание вкладок с расписанием
-//        pager = findViewById(R.id.pager);
-//        FragmentStateAdapter pageAdapter = new MyAdapter(this, timetable, calls, group, week); // todo
-//        pager.setAdapter(pageAdapter);
-//
-//        TabLayout tabLayout = findViewById(R.id.tab_layout);
-//        TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, pager, new TabLayoutMediator.TabConfigurationStrategy() {
-//            @Override
-//            public void onConfigureTab(TabLayout.Tab tab, int position) {
-//                tab.setText(tabsName[position] + "\n" + weekDays[position] + " " + monthName[weekMonth[position]]);
-//            }
-//        });
-//        tabLayoutMediator.attach();
-//
-//        // слушатель смены вкладок
-//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-//            @Override
-//            public void onTabSelected(TabLayout.Tab tab) {
-//                buttonToCurrentDate.setEnabled(true);
-//            }
-//
-//            @Override
-//            public void onTabUnselected(TabLayout.Tab tab) {
-//            }
-//
-//            @Override
-//            public void onTabReselected(TabLayout.Tab tab) {
-//            }
-//        });
-//
-//        //
-//        pager.setCurrentItem(currentTab, false);
-//        buttonToCurrentDate.setEnabled(false);
+        createTimetablePages();
+        
     }
 
-
+    
     @Override
     public void onStop() {
         super.onStop();
@@ -222,16 +190,16 @@ public class MainActivity extends AppCompatActivity {
             String[] Other = callsBlocks[1].split("\n");
 
             // структура    номер дня недели; номер пары; время начала или конца;
-            basicCallsSchedule = new MyTime[5][5][2];
+            callsSchedule = new MyTime[5][5][2];
 
             for (int i = 0; i < Monday.length; i++) {
-                basicCallsSchedule[0][i] = splitCallsString(Monday[i]);
+                callsSchedule[0][i] = splitCallsString(Monday[i]);
             }
             for (int i = 0; i < Other.length; i++) {
-                basicCallsSchedule[1][i] = splitCallsString(Other[i]);
-                basicCallsSchedule[2][i] = splitCallsString(Other[i]);
-                basicCallsSchedule[3][i] = splitCallsString(Other[i]);
-                basicCallsSchedule[4][i] = splitCallsString(Other[i]);
+                callsSchedule[1][i] = splitCallsString(Other[i]);
+                callsSchedule[2][i] = splitCallsString(Other[i]);
+                callsSchedule[3][i] = splitCallsString(Other[i]);
+                callsSchedule[4][i] = splitCallsString(Other[i]);
             }
 
         } catch (Exception ex) {
@@ -253,7 +221,7 @@ public class MainActivity extends AppCompatActivity {
             String[] timetableBlocks = text.split("========\n");
 
             // структура    номер дня недели; группа; тип недели (верхняя / нижняя); какая пара по счету
-            basicTimetable = new Pair[5][2][2][5];
+            timetable = new Pair[5][2][2][5];
 
             // цикл по дням неледи
             for (int i = 0; i < timetableBlocks.length; i++) {
@@ -266,63 +234,19 @@ public class MainActivity extends AppCompatActivity {
                         Integer g = Integer.parseInt(groopAndWeekList[k].split("")[0]) - 1;
                         Integer w = Integer.parseInt(groopAndWeekList[k].split("")[1]) - 1;
                         Integer p = Integer.parseInt(string[j + 1]) - 1;
-
-//                        Log.d(LogTag, i + " " + g + " " + w + " " + p);
-
-                        basicTimetable[i][g][w][p] = new Pair(
+                        
+                        timetable[i][g][w][p] = new Pair(
                                 string[j + 2],
                                 string[j + 3],
                                 string[j + 4],
                                 Integer.parseInt(string[j + 5]),
-                                basicCallsSchedule[i][p][0],
-                                basicCallsSchedule[i][p][1]);
+                                callsSchedule[i][p][0],
+                                callsSchedule[i][p][1]);
                     }
                 }
 
             }
-
-
-//                for (int i = 0; i < timetableBlocks.length; i++) {
-//                    String[] blocksPart = timetableBlocks[i].split("--------");
-//
-//                    if (i == 0) {
-//                        for (int j = 1; j < blocksPart.length; j++) {
-//                            String[] strings = blocksPart[j].split("\n");
-//
-//                            if (j == 1) {
-//                                for (int k = 1; k < strings.length; k++) {
-////                                callSchedule[0][k - 1] = splitCallsString(strings[k]);
-//                                    calls[0][k - 1] = strings[k].replace("\"", "").replace("\r", "").replace("\n", "");
-//                                }
-//                            } else {
-//                                for (int k = 1; k < strings.length; k++) {
-////                                callSchedule[1][k - 1] = splitCallsString(strings[k]);
-//                                    calls[1][k - 1] = strings[k].replace("\"", "").replace("\r", "").replace("\n", "");
-//                                }
-//                            }
-//                        }
-//
-//                    } else {
-//                        for (int j = 1; j < blocksPart.length; j++) {
-//                            String[] strings = blocksPart[j].split("\n");
-//
-//                            for (int k = 1; k < strings.length; k = k + 6) {
-//                                String[] temp1 = strings[k].split(" ");
-//
-//                                for (int q = 0; q < temp1.length; q++) {
-//                                    int groop_ = Integer.parseInt(Character.toString(temp1[q].charAt(0))) - 1;
-//                                    int week_ = Integer.parseInt(Character.toString(temp1[q].charAt(1))) - 1;
-//                                    int day_ = Integer.parseInt(strings[k + 1].replace("\r", "")) - 1;
-//                                    Log.d(LogTag, day_ + " ");
-//                                    for (int w = 0; w < 4; w++) {
-//                                        callSchedule[i - 1][groop_][week_][day_] = splitCallsString(calls[week_][i - 1]);
-//                                        timetable[i - 1][groop_][week_][day_][w] = strings[k + 2 + w].replace("\r", "").replace("\n", "");
-//                                    }
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
+            
 //                Log.d(LogTag, MyTime.timesFormatString(callSchedule[0][1][1][1][0]));
 //                Log.d(LogTag, MyTime.timesFormatString(callSchedule[0][1][1][1][1]));
 
@@ -333,6 +257,43 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception ex) {
             Log.e(LogTag, Log.getStackTraceString(ex));
         }
+    }
+    
+
+    // создание вкладок с расписанием
+    public void createTimetablePages() {
+        pager = findViewById(R.id.pager);
+        FragmentStateAdapter pageAdapter = new MyAdapter(this, timetable, group, week);
+        pager.setAdapter(pageAdapter);
+
+        TabLayout tabLayout = findViewById(R.id.tab_layout);
+        TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, pager, new TabLayoutMediator.TabConfigurationStrategy() {
+            @Override
+            public void onConfigureTab(TabLayout.Tab tab, int position) {
+                tab.setText(tabsName[position] + "\n" + weekDays[position] + " " + monthName[weekMonth[position]]);
+            }
+        });
+        tabLayoutMediator.attach();
+
+        // слушатель смены вкладок
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                buttonToCurrentDate.setEnabled(true);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+            }
+        });
+
+        //
+        pager.setCurrentItem(currentTab, false);
+        buttonToCurrentDate.setEnabled(false);
     }
 
 

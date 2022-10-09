@@ -20,18 +20,17 @@ public class PageFragment extends Fragment {
     String[] lessonsType = {"Лекция", "Практика"};
 
     private int pageNumber;
-    private String[][][][][] timetable;
-    private String[][] calls;
+    private Pair[][][][] timetable;
     private Integer group;
     private Integer week;
     private View result;
 
-    public static PageFragment newInstance(int page, String[][][][][] timetable, String[][] calls, Integer group, Integer week) {
+
+    public static PageFragment newInstance(int page, Pair[][][][] timetable, Integer group, Integer week) {
         PageFragment fragment = new PageFragment();
         Bundle args = new Bundle();
         args.putInt("num", page);
         args.putSerializable("timetable", timetable);
-        args.putSerializable("calls", calls);
         args.putInt("group", group);
         args.putInt("week", week);
         fragment.setArguments(args);
@@ -39,25 +38,11 @@ public class PageFragment extends Fragment {
     }
 
 
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvent event) {
-        if (event.getCurrentDayNum() == pageNumber) {
-            LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (event.getPairNum()), "id", "com.example.timetable1mok"));
-            if (event.getState()) {
-                linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner_enable));
-            } else {
-                linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner));
-            }
-        }
-    }
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pageNumber = getArguments() != null ? getArguments().getInt("num") : 1;
-        timetable = (String[][][][][]) getArguments().getSerializable("timetable");
-        calls = (String[][]) getArguments().getSerializable("calls");
+        timetable = (Pair[][][][]) getArguments().getSerializable("timetable");
         group = getArguments().getInt("group");
         week = getArguments().getInt("week");
 
@@ -121,4 +106,17 @@ public class PageFragment extends Fragment {
         }
         return result;
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageEvent(MessageEvent event) {
+        if (event.getCurrentDayNum() == pageNumber) {
+            LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (event.getPairNum()), "id", "com.example.timetable1mok"));
+            if (event.getState()) {
+                linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner_enable));
+            } else {
+                linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner));
+            }
+        }
+    }
+
 }

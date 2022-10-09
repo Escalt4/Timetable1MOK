@@ -6,16 +6,14 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 public class MyAdapter extends FragmentStateAdapter {
-    private String[][][][][] timetable;
-    private String[][] calls;
+    private Pair[][][][] timetable;
     private Integer group;
     private Integer week;
 
 
-    public MyAdapter(FragmentActivity fragmentActivity, String[][][][][] timetable, String[][] calls, Integer group, Integer week) {
+    public MyAdapter(FragmentActivity fragmentActivity, Pair[][][][] timetable, Integer group, Integer week) {
         super(fragmentActivity);
         this.timetable = timetable;
-        this.calls = calls;
         this.group = group;
         this.week = week;
     }
@@ -24,7 +22,7 @@ public class MyAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return PageFragment.newInstance(position, timetable, calls, group, week);
+        return PageFragment.newInstance(position, timetable, group, week);
     }
 
     @Override
