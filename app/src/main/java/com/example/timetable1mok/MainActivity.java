@@ -49,15 +49,8 @@ public class MainActivity extends AppCompatActivity {
     Button buttonToCurrentDate;
     ViewPager2 pager;
 
-    String[][][][][] timetable;
-    String[][][][] basicTimetable;
-    String[][] calls;
-    MyTime[][] callsTime = new MyTime[2][11];
-
-    MyTime[][] basicCallsScheduleMonday;
-    MyTime[][] basicCallsScheduleOther;
-
-    MyTime[][][][][] callSchedule;
+    Pair[][][][] basicTimetable;
+    MyTime[][][] basicCallsSchedule;
 
     Calendar calendar;
     Integer group; // выбраная группа
@@ -93,6 +86,40 @@ public class MainActivity extends AppCompatActivity {
         // получение расписания из файла
         getCalls();
         getTimetable();
+
+//        // создание вкладок с расписанием
+//        pager = findViewById(R.id.pager);
+//        FragmentStateAdapter pageAdapter = new MyAdapter(this, timetable, calls, group, week); // todo
+//        pager.setAdapter(pageAdapter);
+//
+//        TabLayout tabLayout = findViewById(R.id.tab_layout);
+//        TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, pager, new TabLayoutMediator.TabConfigurationStrategy() {
+//            @Override
+//            public void onConfigureTab(TabLayout.Tab tab, int position) {
+//                tab.setText(tabsName[position] + "\n" + weekDays[position] + " " + monthName[weekMonth[position]]);
+//            }
+//        });
+//        tabLayoutMediator.attach();
+//
+//        // слушатель смены вкладок
+//        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+//            @Override
+//            public void onTabSelected(TabLayout.Tab tab) {
+//                buttonToCurrentDate.setEnabled(true);
+//            }
+//
+//            @Override
+//            public void onTabUnselected(TabLayout.Tab tab) {
+//            }
+//
+//            @Override
+//            public void onTabReselected(TabLayout.Tab tab) {
+//            }
+//        });
+//
+//        //
+//        pager.setCurrentItem(currentTab, false);
+//        buttonToCurrentDate.setEnabled(false);
     }
 
 
@@ -100,6 +127,7 @@ public class MainActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
 
+        // сохранение настроек
         prefEditor.putInt("group", group);
         prefEditor.apply();
     }
@@ -151,11 +179,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (!CurDate) {
             currentTab = pager.getCurrentItem();
-            setTimetable();
+//            setTimetable();
         }
     }
 
 
+    // получение времени начала/каонца пары из строки
     public MyTime[] splitCallsString(String str) {
         str = str.replace("\"", "").replace("\r", "").replace("\n", "");
 
@@ -187,20 +216,22 @@ public class MainActivity extends AppCompatActivity {
             inputStream.close();
             String text = new String(buffer).replace("\r", "");
 
-            String[] callsBlocks = text.split("========");
+            String[] callsBlocks = text.split("========\n");
 
             String[] Monday = callsBlocks[0].split("\n");
             String[] Other = callsBlocks[1].split("\n");
 
-            // номер пары; время начала или конца;
-            basicCallsScheduleMonday = new MyTime[5][2];
-            basicCallsScheduleOther = new MyTime[4][2];
+            // структура    номер дня недели; номер пары; время начала или конца;
+            basicCallsSchedule = new MyTime[5][5][2];
 
             for (int i = 0; i < Monday.length; i++) {
-                basicCallsScheduleMonday[i] = splitCallsString(Monday[i]);
+                basicCallsSchedule[0][i] = splitCallsString(Monday[i]);
             }
             for (int i = 0; i < Other.length; i++) {
-                basicCallsScheduleOther[i] = splitCallsString(Other[i]);
+                basicCallsSchedule[1][i] = splitCallsString(Other[i]);
+                basicCallsSchedule[2][i] = splitCallsString(Other[i]);
+                basicCallsSchedule[3][i] = splitCallsString(Other[i]);
+                basicCallsSchedule[4][i] = splitCallsString(Other[i]);
             }
 
         } catch (Exception ex) {
@@ -219,20 +250,36 @@ public class MainActivity extends AppCompatActivity {
             inputStream.close();
             String text = new String(buffer).replace("\r", "");
 
-            String[] timetableBlocks = text.split("========");
+            String[] timetableBlocks = text.split("========\n");
 
-            // номер дня недели; группа; тип недели (верхняя / нижняя); какая пара по счету
-            basicTimetable = new String[5][2][2][5];
+            // структура    номер дня недели; группа; тип недели (верхняя / нижняя); какая пара по счету
+            basicTimetable = new Pair[5][2][2][5];
 
-
+            // цикл по дням неледи
             for (int i = 0; i < timetableBlocks.length; i++) {
                 String[] string = timetableBlocks[i].split("\n");
-                for (int j = 1; j < string.length; j = j + 6) {
-                    string[j].split(" ");
-                }
-                    basicTimetable[i][][][]
+                // цикл по блокам занятий
+                for (int j = 0; j < string.length; j = j + 6) {
+                    String[] groopAndWeekList = string[j].split(" ");
+                    // цикл по вариантам группа/неделя
+                    for (int k = 0; k < groopAndWeekList.length; k++) {
+                        Integer g = Integer.parseInt(groopAndWeekList[k].split("")[0]) - 1;
+                        Integer w = Integer.parseInt(groopAndWeekList[k].split("")[1]) - 1;
+                        Integer p = Integer.parseInt(string[j + 1]) - 1;
 
+//                        Log.d(LogTag, i + " " + g + " " + w + " " + p);
+
+                        basicTimetable[i][g][w][p] = new Pair(
+                                string[j + 2],
+                                string[j + 3],
+                                string[j + 4],
+                                Integer.parseInt(string[j + 5]),
+                                basicCallsSchedule[i][p][0],
+                                basicCallsSchedule[i][p][1]);
+                    }
                 }
+
+            }
 
 
 //                for (int i = 0; i < timetableBlocks.length; i++) {
@@ -276,185 +323,129 @@ public class MainActivity extends AppCompatActivity {
 //                        }
 //                    }
 //                }
-                Log.d(LogTag, MyTime.timesFormatString(callSchedule[0][1][1][1][0]));
-                Log.d(LogTag, MyTime.timesFormatString(callSchedule[0][1][1][1][1]));
+//                Log.d(LogTag, MyTime.timesFormatString(callSchedule[0][1][1][1][0]));
+//                Log.d(LogTag, MyTime.timesFormatString(callSchedule[0][1][1][1][1]));
 
-                setTimetable();
-
-                initializeCalls();
-                startNewTimer();
-            } catch(Exception ex){
-                Log.e(LogTag, Log.getStackTraceString(ex));
-            }
-        }
-
-
-        void setTimetable () {
-            pager = findViewById(R.id.pager);
-            FragmentStateAdapter pageAdapter = new MyAdapter(this, timetable, calls, group, week);
-            pager.setAdapter(pageAdapter);
-
-            TabLayout tabLayout = findViewById(R.id.tab_layout);
-            TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, pager, new TabLayoutMediator.TabConfigurationStrategy() {
-                @Override
-                public void onConfigureTab(TabLayout.Tab tab, int position) {
-                    tab.setText(tabsName[position] + "\n" + weekDays[position] + " " + monthName[weekMonth[position]]);
-                }
-            });
-            tabLayoutMediator.attach();
-
-            tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-                @Override
-                public void onTabSelected(TabLayout.Tab tab) {
-                    buttonToCurrentDate.setEnabled(true);
-                }
-
-                @Override
-                public void onTabUnselected(TabLayout.Tab tab) {
-                }
-
-                @Override
-                public void onTabReselected(TabLayout.Tab tab) {
-                }
-            });
-
-            pager.setCurrentItem(currentTab, false);
-            buttonToCurrentDate.setEnabled(false);
-
-        }
-
-
-        void initializeCalls () {
-            for (int i = 0; i < 2; i++) {
-                int k = 0;
-                for (int j = 0; j < (5 - i); j++) {
-                    callsTime[i][k] = new MyTime(
-                            Integer.parseInt(calls[i][j].split("-")[0].split("\\.")[0]),
-                            Integer.parseInt(calls[i][j].split("-")[0].split("\\.")[1])
-                    );
-
-                    callsTime[i][k + 1] = new MyTime(
-                            Integer.parseInt(calls[i][j].split("-")[1].split("\\.")[0]),
-                            Integer.parseInt(calls[i][j].split("-")[1].split("\\.")[1])
-                    );
-                    k += 2;
-                }
-            }
-//        callsTime[0][10] = MyTime.additionTimes(callsTime[0][0], new MyTime(24, 0, 0));
-//        callsTime[1][8] = MyTime.additionTimes(callsTime[1][0], new MyTime(24, 0, 0));
-        }
-
-
-        String label;
-        Integer curPair = 0;
-        ;
-        MyTime cur;
-        MyTime timeStart;
-        MyTime timeEnd;
-        Handler handler = new Handler();
-
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                cur = new MyTime(
-                        Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
-                        Calendar.getInstance().get(Calendar.MINUTE),
-                        Calendar.getInstance().get(Calendar.SECOND)
-                );
-
-                if (MyTime.isBetweenTimes(cur, timeStart, timeEnd)) {
-                    textViewTimer.setText(label + MyTime.subtractionTimesFormatString(timeEnd, cur));
-                    EventBus.getDefault().post(new MessageEvent(true, curPair, currentDayNum));
-                    doCicleTimer();
-                } else {
-                    if (curPair != 0) {
-                        EventBus.getDefault().post(new MessageEvent(false, curPair, currentDayNum));
-                    }
-                    startNewTimer();
-                }
-            }
-        };
-
-
-        // таймер до начала/конца пары
-        public void doCicleTimer () {
-            handler.postDelayed(runnable, 250);
-        }
-
-
-        public void startNewTimer () {
-            if (currentDayNum == 5 || currentDayNum == 6) {
-                textViewTimer.setText("Сейчас нет пар");
-                return;
-            }
-
-            cur = new MyTime(
-                    Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
-                    Calendar.getInstance().get(Calendar.MINUTE),
-                    Calendar.getInstance().get(Calendar.SECOND)
-            );
-
-            boolean started = false;
-
-            for (int i = 0; i < (10 - calls_type * 2) - 1; i++) {
-                if (MyTime.isBetweenTimes(cur, callsTime[calls_type][i], callsTime[calls_type][i + 1])) {
-                    if (i % 2 == 0) {
-                        label = "До конца пары:\n";
-                        curPair = i / 2 + 1;
-                    } else {
-                        curPair = 0;
-                        label = "До начала пары:\n";
-                    }
-                    timeStart = callsTime[calls_type][i];
-                    timeEnd = callsTime[calls_type][i + 1];
-                    started = true;
-                    doCicleTimer();
-                    break;
-
-                }
-            }
-
-            if (!started) {
-                textViewTimer.setText("Сейчас нет пар");
-            }
-        }
-
-
-        // Обработка нажатий кнопок
-        public void onClick (View view){
-            switch (view.getId()) {
-                case R.id.buttonGroup:
-                    if (group == 1) {
-                        group = 2;
-                    } else {
-                        group = 1;
-                    }
-
-                    buttonGroup.setText(group + "");
-                    currentTab = pager.getCurrentItem();
-                    setTimetable();
-                    break;
-
-                case R.id.buttonToCurrentDate:
-                    updateDateVariables(true);
-                    setTimetable();
-                    buttonToCurrentDate.setEnabled(false);
-                    break;
-
-                case R.id.buttonWeekUp:
-                    calendar.add(Calendar.DAY_OF_YEAR, 7);
-                    updateDateVariables(false);
-                    buttonToCurrentDate.setEnabled(true);
-                    break;
-
-                case R.id.buttonWeekDown:
-                    calendar.add(Calendar.DAY_OF_YEAR, -7);
-                    updateDateVariables(false);
-                    buttonToCurrentDate.setEnabled(true);
-                    break;
-
-                default:
-                    break;
-            }
+//                setTimetable();
+//
+//                initializeCalls();
+//                startNewTimer();
+        } catch (Exception ex) {
+            Log.e(LogTag, Log.getStackTraceString(ex));
         }
     }
+
+
+//    String label;
+//    Integer curPair = 0;
+//    ;
+//    MyTime cur;
+//    MyTime timeStart;
+//    MyTime timeEnd;
+//    Handler handler = new Handler();
+//
+//    Runnable runnable = new Runnable() {
+//        @Override
+//        public void run() {
+//            cur = new MyTime(
+//                    Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+//                    Calendar.getInstance().get(Calendar.MINUTE),
+//                    Calendar.getInstance().get(Calendar.SECOND)
+//            );
+//
+//            if (MyTime.isBetweenTimes(cur, timeStart, timeEnd)) {
+//                textViewTimer.setText(label + MyTime.subtractionTimesFormatString(timeEnd, cur));
+//                EventBus.getDefault().post(new MessageEvent(true, curPair, currentDayNum));
+//                doCicleTimer();
+//            } else {
+//                if (curPair != 0) {
+//                    EventBus.getDefault().post(new MessageEvent(false, curPair, currentDayNum));
+//                }
+//                startNewTimer();
+//            }
+//        }
+//    };
+//
+//
+//    // таймер до начала/конца пары
+//    public void doCicleTimer() {
+//        handler.postDelayed(runnable, 250);
+//    }
+//
+//
+//    public void startNewTimer() {
+//        if (currentDayNum == 5 || currentDayNum == 6) {
+//            textViewTimer.setText("Сейчас нет пар");
+//            return;
+//        }
+//
+//        cur = new MyTime(
+//                Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+//                Calendar.getInstance().get(Calendar.MINUTE),
+//                Calendar.getInstance().get(Calendar.SECOND)
+//        );
+//
+//        boolean started = false;
+//
+//        for (int i = 0; i < (10 - calls_type * 2) - 1; i++) {
+//            if (MyTime.isBetweenTimes(cur, callsTime[calls_type][i], callsTime[calls_type][i + 1])) {
+//                if (i % 2 == 0) {
+//                    label = "До конца пары:\n";
+//                    curPair = i / 2 + 1;
+//                } else {
+//                    curPair = 0;
+//                    label = "До начала пары:\n";
+//                }
+//                timeStart = callsTime[calls_type][i];
+//                timeEnd = callsTime[calls_type][i + 1];
+//                started = true;
+//                doCicleTimer();
+//                break;
+//
+//            }
+//        }
+//
+//        if (!started) {
+//            textViewTimer.setText("Сейчас нет пар");
+//        }
+//    }
+
+
+    // Обработка нажатий кнопок
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.buttonGroup:
+                if (group == 1) {
+                    group = 2;
+                } else {
+                    group = 1;
+                }
+
+                buttonGroup.setText(group + "");
+                currentTab = pager.getCurrentItem();
+//                setTimetable();
+                break;
+
+            case R.id.buttonToCurrentDate:
+                updateDateVariables(true);
+//                setTimetable();
+                buttonToCurrentDate.setEnabled(false);
+                break;
+
+            case R.id.buttonWeekUp:
+                calendar.add(Calendar.DAY_OF_YEAR, 7);
+                updateDateVariables(false);
+                buttonToCurrentDate.setEnabled(true);
+                break;
+
+            case R.id.buttonWeekDown:
+                calendar.add(Calendar.DAY_OF_YEAR, -7);
+                updateDateVariables(false);
+                buttonToCurrentDate.setEnabled(true);
+                break;
+
+            default:
+                break;
+        }
+    }
+}
