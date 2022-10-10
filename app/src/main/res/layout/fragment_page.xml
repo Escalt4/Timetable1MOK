@@ -6,25 +6,47 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="?attr/colorSecondary"
         android:orientation="vertical">
 
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="?attr/colorSecondary"
             android:paddingTop="16dp"
             android:paddingBottom="16dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="?attr/colorSecondary"
                 android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/linearLayout11"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/rounded_corner_enable"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/linearLayout1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="5dp"
-                    android:layout_marginVertical="3dp"
+                    android:layout_margin="3dp"
                     android:background="@drawable/rounded_corner"
                     android:orientation="horizontal"
                     android:paddingTop="10dp"
@@ -74,7 +96,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
-                                android:minLines="1"
                                 android:paddingBottom="1dp"
                                 android:text=""
                                 android:textSize="14sp"
@@ -90,7 +111,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
-                                android:minLines="1"
                                 android:text=""
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
@@ -103,11 +123,30 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/linearLayout12"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/rounded_corner_enable"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/linearLayout2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="5dp"
-                    android:layout_marginVertical="3dp"
+                    android:layout_margin="3dp"
                     android:background="@drawable/rounded_corner"
                     android:orientation="horizontal"
                     android:paddingTop="10dp"
@@ -159,7 +198,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
-                                android:minLines="1"
                                 android:paddingBottom="1dp"
                                 android:text=""
                                 android:textSize="14sp"
@@ -175,7 +213,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
-                                android:minLines="1"
                                 android:text=""
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
@@ -188,11 +225,30 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/linearLayout13"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/rounded_corner_enable"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/linearLayout3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="5dp"
-                    android:layout_marginVertical="3dp"
+                    android:layout_margin="3dp"
                     android:background="@drawable/rounded_corner"
                     android:orientation="horizontal"
                     android:paddingTop="10dp"
@@ -244,7 +300,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
-                                android:minLines="1"
                                 android:paddingBottom="1dp"
                                 android:text=""
                                 android:textSize="14sp"
@@ -260,7 +315,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
-                                android:minLines="1"
                                 android:text=""
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
@@ -273,11 +327,30 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/linearLayout14"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/rounded_corner_enable"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/linearLayout4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="5dp"
-                    android:layout_marginVertical="3dp"
+                    android:layout_margin="3dp"
                     android:background="@drawable/rounded_corner"
                     android:orientation="horizontal"
                     android:paddingTop="10dp"
@@ -329,7 +402,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
-                                android:minLines="1"
                                 android:paddingBottom="1dp"
                                 android:text=""
                                 android:textSize="14sp"
@@ -345,7 +417,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
-                                android:minLines="1"
                                 android:text=""
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
@@ -358,11 +429,30 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/linearLayout15"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/rounded_corner_enable"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/linearLayout5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="5dp"
-                    android:layout_marginVertical="3dp"
+                    android:layout_margin="3dp"
                     android:background="@drawable/rounded_corner"
                     android:orientation="horizontal"
                     android:paddingTop="10dp"
@@ -414,7 +504,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
-                                android:minLines="1"
                                 android:paddingBottom="1dp"
                                 android:text=""
                                 android:textSize="14sp"
@@ -430,7 +519,6 @@
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:gravity="center_vertical"
-                                android:minLines="1"
                                 android:text=""
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
