@@ -21,10 +21,11 @@ import java.io.InputStream;
 import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
-    String LogTag = "MyApp";
-    Integer[] dayOfWeek = {5, 6, 0, 1, 2, 3, 4};
-    String[] tabsName = {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"};
-    String[] monthName = {"Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"};
+    static final String LOG_TAG = "MyApp";
+    static final Integer[] DAYS_OF_WEEK = {5, 6, 0, 1, 2, 3, 4};
+    static final Integer[] TABS = {0, 1, 2, 3, 4, 0, 0};
+    static final String[] TABS_NAMES = {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"};
+    static final String[] MONTHS_NAMES = {"Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"};
 
     SharedPreferences settings;
     SharedPreferences.Editor prefEditor;
@@ -47,13 +48,17 @@ public class MainActivity extends AppCompatActivity {
     Integer newHighlightBreak = -1;
 
     Calendar calendar;
-    Integer group;
-    Integer curDayOfWeek;
     Integer week;
-    Integer[] weekDays;
-    Integer[] weekMonth;
-    Integer curTab;
-    Integer curWeek;
+    Integer weekNum;
+    Integer curWeekNum;
+    Integer dayOfWeek;
+    Integer curDayOfWeek;
+    Integer[] curWeekDays;
+    Integer[] curWeekMonth;
+
+    Integer group;
+
+    Integer curTab = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,22 +72,22 @@ public class MainActivity extends AppCompatActivity {
         textViewCurWeek = findViewById(R.id.textViewCurWeek);
         buttonToCurrentDate = findViewById(R.id.buttonToCurrentDate);
 
-        // востановление настроек
         settings = getSharedPreferences("Settings", MODE_PRIVATE);
         prefEditor = settings.edit();
         group = settings.getInt("group", 2);
         buttonGroup.setText(group + "");
 
-        // определение переменных связаных с датой
-        updDateVar(true);
 
-        // получение расписания из файла
+        weekNum = Calendar.getInstance().get(Calendar.WEEK_OF_YEAR);
+        dayOfWeek = DAYS_OF_WEEK[Calendar.getInstance().get(Calendar.DAY_OF_WEEK)];
+        calendar = Calendar.getInstance();
+        updDateVar();
+
         getCalls();
         getTimetable();
-
-        // создание вкладок с расписанием
         createTimetablePages();
 
+        curDateUpd();
         timer();
     }
 
@@ -90,33 +95,12 @@ public class MainActivity extends AppCompatActivity {
     public void onPause() {
         super.onPause();
 
-        // сохранение настроек
         prefEditor.putInt("group", group);
         prefEditor.apply();
     }
 
-    // определение переменных связаных с датой
-    public void updDateVar(boolean CurDate) {
-        if (CurDate) {
-            calendar = Calendar.getInstance();
-            if (calendar.get(Calendar.HOUR_OF_DAY) > 17) {
-                calendar.add(Calendar.DAY_OF_YEAR, 1);
-            }
-            curWeek = calendar.get(Calendar.WEEK_OF_YEAR);
-        }
-
-        curDayOfWeek = dayOfWeek[calendar.get(Calendar.DAY_OF_WEEK)];
-
-        if (CurDate) {
-            if (curDayOfWeek < 5) {
-                curTab = curDayOfWeek;
-            } else {
-                calendar.add(Calendar.DAY_OF_YEAR, 7);
-                curTab = 0;
-            }
-        }
-
-        if ( calendar.get(Calendar.WEEK_OF_YEAR)% 2 == 0) {
+    public void updDateVar() {
+        if (calendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) {
             week = 2;
             textViewCurWeek.setText("Нижняя неделя");
         } else {
@@ -124,16 +108,19 @@ public class MainActivity extends AppCompatActivity {
             week = 1;
         }
 
-        weekDays = new Integer[7];
-        weekMonth = new Integer[7];
+        curWeekNum = calendar.get(Calendar.WEEK_OF_YEAR);
+        curDayOfWeek = DAYS_OF_WEEK[calendar.get(Calendar.DAY_OF_WEEK)];
+
+        curWeekDays = new Integer[7];
+        curWeekMonth = new Integer[7];
         for (int d = 0; d < 7; d++) {
             calendar.set(Calendar.DAY_OF_WEEK, d + 2);
-            weekDays[d] = calendar.get(Calendar.DAY_OF_MONTH);
-            weekMonth[d] = calendar.get(Calendar.MONTH);
+            curWeekDays[d] = calendar.get(Calendar.DAY_OF_MONTH);
+            curWeekMonth[d] = calendar.get(Calendar.MONTH);
         }
     }
 
-    // получение времени начала/каонца пары из строки
+    // получение времени начала/конца пары из строки
     public MyTime[] splitCallsString(String str) {
         str = str.replace("\"", "").replace("\r", "").replace("\n", "");
 
@@ -183,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         } catch (Exception ex) {
-            Log.e(LogTag, Log.getStackTraceString(ex));
+            Log.e(LOG_TAG, Log.getStackTraceString(ex));
         }
     }
 
@@ -226,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         } catch (Exception ex) {
-            Log.e(LogTag, Log.getStackTraceString(ex));
+            Log.e(LOG_TAG, Log.getStackTraceString(ex));
         }
     }
 
@@ -240,43 +227,25 @@ public class MainActivity extends AppCompatActivity {
         TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, pager, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(TabLayout.Tab tab, int position) {
-                tab.setText(tabsName[position] + "\n" + weekDays[position] + " " + monthName[weekMonth[position]]);
+                tab.setText(TABS_NAMES[position] + "\n" + curWeekDays[position] + " " + MONTHS_NAMES[curWeekMonth[position]]);
             }
         });
         tabLayoutMediator.attach();
 
-        // слушатель смены вкладок
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                if (curTab == tabLayout.getSelectedTabPosition() && curWeek == calendar.get(Calendar.WEEK_OF_YEAR)) {
-                    buttonToCurrentDate.setEnabled(false);
-                } else {
-                    buttonToCurrentDate.setEnabled(true);
-                }
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-            }
-        });
-
-        pager.setCurrentItem(curTab, false);
+        pager.setCurrentItem(TABS[curDayOfWeek], false);
 
         sendTimetableUpdate();
-        sendHighlightUpdate(-1, -1, -1);
+        sendHighlightUpdate();
     }
 
-    //
     public void sendTimetableUpdate() {
         EventBus.getDefault().postSticky(new UpdateTimetableEvent(timetable, group, week));
     }
 
-    //
+    public void sendHighlightUpdate() {
+        sendHighlightUpdate(-1, -1, -1);
+    }
+
     public void sendHighlightUpdate(Integer highlightDay, Integer highlightPair, Integer highlightBreak) {
         EventBus.getDefault().postSticky(new UpdateHighlightEvent(highlightDay, highlightPair, highlightBreak));
     }
@@ -284,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
     // обновление заголовков вкладок
     public void updateTabsNames() {
         for (int i = 0; i < 5; i++) {
-            tabLayout.getTabAt(i).setText(tabsName[i] + "\n" + weekDays[i] + " " + monthName[weekMonth[i]]);
+            tabLayout.getTabAt(i).setText(TABS_NAMES[i] + "\n" + curWeekDays[i] + " " + MONTHS_NAMES[curWeekMonth[i]]);
         }
     }
 
@@ -308,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
                     Calendar.getInstance().get(Calendar.SECOND)
             );
 
-//            Log.d(LogTag, "");
+//            Log.d(LOG_TAG, "");
 
             MyTime nextTime;
             boolean set = false;
@@ -355,27 +324,40 @@ public class MainActivity extends AppCompatActivity {
             }
 
             timer();
-
-//                if (MyTime.isBetweenTimes(cur, callsTime[calls_type][i], callsTime[calls_type][i + 1])) {
-//
-//
-//
-//            if (MyTime.isBetweenTimes(cur, timeStart, timeEnd)) {
-//                textViewTimer.setText(label + MyTime.subtractionTimesFormatString(timeEnd, cur));
-//                EventBus.getDefault().post(new MessageEvent(true, curPair, curDayOfWeek));
-//                doCicleTimer();
-//            } else {
-//                if (curPair != 0) {
-//                    EventBus.getDefault().post(new MessageEvent(false, curPair, curDayOfWeek));
-//                }
-//                startNewTimer();
         }
     };
 
+    // переключение на другой день
+//    if (calendar.get(Calendar.HOUR_OF_DAY) > 17) {
+//        calendar.add(Calendar.DAY_OF_YEAR, 1);
+//    }
+
     public void timer() {
-        handler.postDelayed(runnable, 25);
+        handler.postDelayed(runnable, 10);
     }
 
+    Handler handlerCurDateUpd = new Handler();
+    Runnable runnableCurDateUpd = new Runnable() {
+        @Override
+        public void run() {
+            weekNum = Calendar.getInstance().get(Calendar.WEEK_OF_YEAR);
+            dayOfWeek = DAYS_OF_WEEK[Calendar.getInstance().get(Calendar.DAY_OF_WEEK)];
+
+            curTab = pager.getCurrentItem();
+
+            if (weekNum == curWeekNum && TABS[dayOfWeek] == curTab) {
+                buttonToCurrentDate.setEnabled(false);
+            } else {
+                buttonToCurrentDate.setEnabled(true);
+            }
+
+            curDateUpd();
+        }
+    };
+
+    public void curDateUpd() {
+        handlerCurDateUpd.postDelayed(runnableCurDateUpd, 10);
+    }
 
     // Обработка нажатий кнопок
     public void onClick(View view) {
@@ -389,34 +371,28 @@ public class MainActivity extends AppCompatActivity {
 
                 buttonGroup.setText(String.valueOf(group));
                 sendTimetableUpdate();
-                sendHighlightUpdate(-1, -1, -1);
                 break;
 
             case R.id.buttonToCurrentDate:
-                updDateVar(true);
+                calendar = Calendar.getInstance();
+                updDateVar();
                 updateTabsNames();
-                pager.setCurrentItem(curTab);
+                pager.setCurrentItem(TABS[curDayOfWeek]);
                 sendTimetableUpdate();
-                sendHighlightUpdate(-1, -1, -1);
-                buttonToCurrentDate.setEnabled(false);
                 break;
 
             case R.id.buttonWeekUp:
                 calendar.add(Calendar.DAY_OF_YEAR, 7);
-                updDateVar(false);
+                updDateVar();
                 updateTabsNames();
                 sendTimetableUpdate();
-                sendHighlightUpdate(-1, -1, -1);
-                buttonToCurrentDate.setEnabled(true);
                 break;
 
             case R.id.buttonWeekDown:
                 calendar.add(Calendar.DAY_OF_YEAR, -7);
-                updDateVar(false);
+                updDateVar();
                 updateTabsNames();
                 sendTimetableUpdate();
-                sendHighlightUpdate(-1, -1, -1);
-                buttonToCurrentDate.setEnabled(true);
                 break;
 
             default:
