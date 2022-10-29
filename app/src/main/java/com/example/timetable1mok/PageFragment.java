@@ -54,15 +54,15 @@ public class PageFragment extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onUpdateTimetableEvent(UpdateTimetableEvent event) {
+    public void onSetTimetableEvent(SetTimetableEvent event) {
         timetable = event.getTimetable();
         group = event.getGroup();
         week = event.getWeek();
 
-        updateTimetable();
+        setTimetable();
     }
 
-    public void updateTimetable() {
+    public void setTimetable() {
         for (int i = 0; i < 5; i++) {
             Integer lastPair = 5;
             for (int j = 4; j >= 0; j--) {
@@ -99,15 +99,15 @@ public class PageFragment extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onHighlightEvent(UpdateHighlightEvent event) {
+    public void onSetHighlightingEvent(SetHighlightingEvent event) {
         highlightDay = event.getHighlightDay();
         highlightPair = event.getHighlightPair();
         highlightBreak = event.getHighlightBreak();
 
-        updateHighlight();
+        setHighlighting();
     }
 
-    public void updateHighlight() {
+    public void setHighlighting() {
         for (int i = 0; i < 5; i++) {
             LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (i + 1), "id", getActivity().getPackageName()));
             if (highlightDay == pageNumber && highlightPair == i) {
@@ -123,5 +123,9 @@ public class PageFragment extends Fragment {
                 linearLayout1.setVisibility(View.GONE);
             }
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    public void onDeleteHighlightingEvent(DeleteHighlightingEvent event) {
     }
 }
