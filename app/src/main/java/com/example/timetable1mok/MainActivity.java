@@ -22,7 +22,7 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
     static final String LOG_TAG = "MyApp";
-    static final Integer[] DAYS_OF_WEEK = {5, 6, 0, 1, 2, 3, 4};
+    static final Integer[] DAYS_OF_WEEK = {6, 0, 1, 2, 3, 4, 5};
     static final Integer[] TABS = {0, 1, 2, 3, 4, 0, 0};
     static final String[] TABS_NAMES = {"ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"};
     static final String[] MONTHS_NAMES = {"Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"};
@@ -40,12 +40,10 @@ public class MainActivity extends AppCompatActivity {
     Pair[][][][] timetable;
     MyTime[][][] callsSchedule;
 
-    Integer curHighlightDay = -1;
-    Integer curHighlightPair = -1;
-    Integer curHighlightBreak = -1;
-    Integer newHighlightDay = -1;
-    Integer newHighlightPair = -1;
-    Integer newHighlightBreak = -1;
+    Integer lastHighlightWeek = -1;
+    Integer lastHighlightDay = -1;
+    Integer lastHighlightPair = -1;
+    Integer lastHighlightBreak = -1;
 
     Calendar curCalendar;           // обьект текущей даты
     Calendar changeCalendar;        // обьект выбраной даты
@@ -80,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
         curCalendar = Calendar.getInstance();
         updCurDateVar();
         changeCalendar = Calendar.getInstance();
+        if (DAYS_OF_WEEK[changeCalendar.get(Calendar.DAY_OF_WEEK) - 1] > 4) {
+            changeCalendar.add(Calendar.DAY_OF_YEAR, 7);
+        }
         updChangeDateVar();
 
         getCalls();
@@ -87,8 +88,7 @@ public class MainActivity extends AppCompatActivity {
         createTimetablePages();
         setTimetable();
 
-//        curDateUpd();
-        timer();
+//        timer();
     }
 
     @Override
@@ -100,17 +100,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void updCurDateVar() {
-        if (changeCalendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) {
+        if (curCalendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) {
             curWeekType = 2;
         } else {
             curWeekType = 1;
         }
 
-        curWeekNum = changeCalendar.get(Calendar.WEEK_OF_YEAR);
-        curDayOfWeek = DAYS_OF_WEEK[changeCalendar.get(Calendar.DAY_OF_WEEK)];
+        curWeekNum = curCalendar.get(Calendar.WEEK_OF_YEAR);
+        curDayOfWeek = DAYS_OF_WEEK[curCalendar.get(Calendar.DAY_OF_WEEK) - 1];
     }
 
     public void updChangeDateVar() {
+        changeDayOfWeek = DAYS_OF_WEEK[changeCalendar.get(Calendar.DAY_OF_WEEK) - 1];
+
         if (changeCalendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) {
             changeWeekType = 2;
             textViewCurWeek.setText("Нижняя неделя");
@@ -120,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         changeWeekNum = changeCalendar.get(Calendar.WEEK_OF_YEAR);
-        changeDayOfWeek = DAYS_OF_WEEK[changeCalendar.get(Calendar.DAY_OF_WEEK)];
 
         changeWeekDays = new Integer[7];
         changeWeekMonth = new Integer[7];
@@ -248,15 +249,24 @@ public class MainActivity extends AppCompatActivity {
 
     // установка расписания
     public void setTimetable() {
-        EventBus.getDefault().postSticky(new SetTimetableEvent(timetable, changeGroup, changeWeekType));
+        Log.d(LOG_TAG, "setTimetable "+lastHighlightWeek+" "+ lastHighlightDay+" "+  lastHighlightPair+" "+  lastHighlightBreak);
+        EventBus.getDefault().postSticky(new SetTimetableEvent(timetable, changeGroup, changeWeekType, changeWeekNum));
+//        EventBus.getDefault().postSticky(new DeleteHighlightingEvent());
+//        EventBus.getDefault().postSticky(new SetHighlightingEvent(lastHighlightWeek, lastHighlightDay, lastHighlightPair, lastHighlightBreak));
     }
 
-    public void setHighlighting(Integer highlightDay, Integer highlightPair, Integer highlightBreak) {
-        EventBus.getDefault().postSticky(new SetHighlightingEvent(highlightDay, highlightPair, highlightBreak));
-    }
+    public void setHighlighting(Integer highlightWeek, Integer highlightDay, Integer highlightPair, Integer highlightBreak) {
+        if (lastHighlightWeek != highlightWeek || lastHighlightDay != highlightDay || lastHighlightPair != highlightPair || lastHighlightBreak != highlightBreak) {
+            lastHighlightWeek = highlightWeek;
+            lastHighlightDay = highlightDay;
+            lastHighlightPair = highlightPair;
+            lastHighlightBreak = highlightBreak;
 
-    public void deleteHighlighting() {
-        EventBus.getDefault().postSticky(new DeleteHighlightingEvent());
+            Log.d(LOG_TAG, "setHighlighting "+lastHighlightWeek+" "+ lastHighlightDay+" "+  lastHighlightPair+" "+  lastHighlightBreak);
+
+            EventBus.getDefault().postSticky(new DeleteHighlightingEvent());
+            EventBus.getDefault().postSticky(new SetHighlightingEvent(lastHighlightWeek, lastHighlightDay, lastHighlightPair, lastHighlightBreak));
+        }
     }
 
     // обновление заголовков вкладок
@@ -266,98 +276,83 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    MyTime cur;
+    MyTime curTime;
+
     Handler handler = new Handler();
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            curCalendar = Calendar.getInstance();
-            updCurDateVar();
+            try {
+                curCalendar = Calendar.getInstance();
+                updCurDateVar();
 
+                curTime = new MyTime(
+                        curCalendar.get(Calendar.HOUR_OF_DAY),
+                        curCalendar.get(Calendar.MINUTE),
+                        curCalendar.get(Calendar.SECOND)
+                );
 
+                label1:
+                {
+                    int dayOfWeek = curDayOfWeek;
+                    int dayDelta = 0;
+                    int weekType = curWeekType;
+                    int weekNum = curWeekNum;
+                    while (true) {
+                        if (dayOfWeek > 4) {
+                            dayOfWeek = 0;
+                            dayDelta += (7 - dayOfWeek);
 
-//            cur = new MyTime(
-//                    Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
-//                    Calendar.getInstance().get(Calendar.MINUTE),
-//                    Calendar.getInstance().get(Calendar.SECOND)
-//            );
-
-//            Log.d(LOG_TAG, "");
-
-            MyTime nextTime;
-            boolean set = false;
-            if (changeDayOfWeek < 5) {
-                for (int d = changeDayOfWeek; d < 5; d++) {
-                    for (int i = 0; i < 5; i++) {
-                        if (!set) {
-                            if (timetable[d][changeGroup - 1][curWeekType - 1][i] != null) {
-                                nextTime = MyTime.additionTimes(timetable[d][changeGroup - 1][curWeekType - 1][i].getTimeStart(), new MyTime(d - changeDayOfWeek, 0, 0, 0));
-                                if (MyTime.subtractionTimesSecond(nextTime, cur) > 0) {
-                                    textViewTimer.setText("До начала пары:\n" + MyTime.subtractionTimesFormatString(nextTime, cur));
-                                    set = true;
-                                } else {
-                                    nextTime = MyTime.additionTimes(timetable[d][changeGroup - 1][curWeekType - 1][i].getTimeEnd(), new MyTime(d - changeDayOfWeek, 0, 0, 0));
-                                    if (MyTime.subtractionTimesSecond(nextTime, cur) > 0) {
-                                        textViewTimer.setText("До конца пары:\n" + MyTime.subtractionTimesFormatString(nextTime, cur));
-                                        set = true;
-                                    }
+                            if (weekType == 1) {
+                                weekType = 2;
+                            } else {
+                                weekType = 1;
+                            }
+                            weekNum += 1;
+                        }
+                        for (int pair = 0; pair < 5; pair++) {
+                            if (timetable[dayOfWeek][changeGroup - 1][weekType - 1][pair] != null) {
+                                if (MyTime.subtractionTimesSecond(
+                                        MyTime.additionTimes(
+                                                timetable[dayOfWeek][changeGroup - 1][weekType - 1][pair].getTimeStart(),
+                                                new MyTime(dayDelta, 0, 0, 0
+                                                )), curTime) >= 0) {
+                                    setHighlighting(weekNum, dayOfWeek, -1, pair);
+                                    break label1;
+                                }
+                                if (MyTime.subtractionTimesSecond(
+                                        MyTime.additionTimes(
+                                                timetable[dayOfWeek][changeGroup - 1][weekType - 1][pair].getTimeEnd(),
+                                                new MyTime(dayDelta, 0, 0, 0
+                                                )), curTime) >= 0) {
+                                    setHighlighting(weekNum, dayOfWeek, pair, -1);
+                                    break label1;
                                 }
                             }
                         }
+                        dayOfWeek += 1;
+                        dayDelta += 1;
                     }
                 }
-            }
 
-            newHighlightDay = -1;
-            newHighlightPair = -1;
-            if (changeDayOfWeek < 5) {
-                for (int i = 0; i < 5; i++) {
-                    if (timetable[changeDayOfWeek][changeGroup - 1][curWeekType - 1][i] != null) {
-                        if (MyTime.isBetweenTimes(cur, timetable[changeDayOfWeek][changeGroup - 1][curWeekType - 1][i].getTimeStart(), timetable[changeDayOfWeek][changeGroup - 1][curWeekType - 1][i].getTimeEnd())) {
-                            newHighlightDay = changeDayOfWeek;
-                            newHighlightPair = i;
-                            break;
-                        }
-                    }
+                changeTab = pager.getCurrentItem();
+                if ((curDayOfWeek < 5 && curWeekNum != changeWeekNum) || (curDayOfWeek > 4 && curWeekNum + 1 != changeWeekNum) || TABS[curDayOfWeek] != changeTab) {
+                    buttonToCurrentDate.setEnabled(true);
+                } else {
+                    buttonToCurrentDate.setEnabled(false);
                 }
-            }
 
-            if (newHighlightDay != curHighlightDay || newHighlightPair != curHighlightPair) {
-                curHighlightDay = newHighlightDay;
-                curHighlightPair = newHighlightPair;
-                setHighlighting(curHighlightDay, curHighlightPair, -1);
-            }
+                timer();
 
-            timer();
+            } catch (Exception ex) {
+                Log.e(LOG_TAG, Log.getStackTraceString(ex));
+            }
         }
     };
 
     public void timer() {
         handler.postDelayed(runnable, 10);
     }
-
-//    Handler handlerCurDateUpd = new Handler();
-//    Runnable runnableCurDateUpd = new Runnable() {
-//        @Override
-//        public void run() {
-//            curWeekNum = Calendar.getInstance().get(Calendar.WEEK_OF_YEAR);
-//            curDayOfWeek = DAYS_OF_WEEK[Calendar.getInstance().get(Calendar.DAY_OF_WEEK)];
-//
-//            changeTab = pager.getCurrentItem();
-//
-//            if (curWeekNum == changeWeekNum && TABS[curDayOfWeek] == changeTab) {
-//                buttonToCurrentDate.setEnabled(false);
-//            } else {
-//                buttonToCurrentDate.setEnabled(true);
-//            }
-//
-//            curDateUpd();
-//        }
-//    };
-//
-//    public void curDateUpd() {
-//        handlerCurDateUpd.postDelayed(runnableCurDateUpd, 10);
-//    }
 
     // Обработка нажатий кнопок
     public void onClick(View view) {
@@ -375,9 +370,12 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.buttonToCurrentDate:
                 changeCalendar = Calendar.getInstance();
+                if (DAYS_OF_WEEK[changeCalendar.get(Calendar.DAY_OF_WEEK) - 1] > 4) {
+                    changeCalendar.add(Calendar.DAY_OF_YEAR, 7);
+                }
                 updChangeDateVar();
                 updateTabsNames();
-                pager.setCurrentItem(TABS[changeDayOfWeek], true);
+                pager.setCurrentItem(TABS[curDayOfWeek], true);
                 setTimetable();
                 break;
 

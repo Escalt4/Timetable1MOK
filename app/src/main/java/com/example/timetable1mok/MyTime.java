@@ -28,21 +28,23 @@ public class MyTime {
     MyTime() {
     }
 
+    // вычитание возвращает MyTime
+    static public MyTime subtractionTimes(MyTime time1, MyTime time2) {
+        Integer second1 = time1.getDay() * 60 * 60 * 24 + time1.getHour() * 60 * 60 + time1.getMinute() * 60 + time1.getSecond();
+        Integer second2 = time2.getDay() * 60 * 60 * 24 + time2.getHour() * 60 * 60 + time2.getMinute() * 60 + time2.getSecond();
 
-//    static public MyTime subtractionTimes(MyTime time1, MyTime time2) {
-//        Integer second1 = time1.getDay() * 60 * 60 * 24 + time1.getHour() * 60 * 60 + time1.getMinute() * 60 + time1.getSecond();
-//        Integer second2 = time2.getDay() * 60 * 60 * 24 + time2.getHour() * 60 * 60 + time2.getMinute() * 60 + time2.getSecond();
-//
-//        Integer subtraction = second1 - second2;
-//
-//        Integer time3Day = subtraction / 60 / 60 / 24;
-//        Integer time3Hour = (subtraction - time3Day * 60 * 60 * 24) / 60 / 60;
-//        Integer time3Minute = (subtraction - time3Day * 60 * 60 * 24 - time3Hour * 60 * 60) / 60;
-//        Integer time3Second = subtraction - time3Day * 60 * 60 * 24 - time3Hour * 60 * 60 - time3Minute * 60;
-//
-//        return new MyTime(time3Day, time3Hour, time3Minute, time3Second);
-//    }
+        Integer subtraction = second1 - second2;
 
+        Integer time3Day = subtraction / 60 / 60 / 24;
+        Integer time3Hour = (subtraction - time3Day * 60 * 60 * 24) / 60 / 60;
+        Integer time3Minute = (subtraction - time3Day * 60 * 60 * 24 - time3Hour * 60 * 60) / 60;
+        Integer time3Second = subtraction - time3Day * 60 * 60 * 24 - time3Hour * 60 * 60 - time3Minute * 60;
+
+        return new MyTime(time3Day, time3Hour, time3Minute, time3Second);
+    }
+
+
+    // вычитание возвращает секунды
     static public Integer subtractionTimesSecond(MyTime time1, MyTime time2) {
         Integer second1 = time1.getDay() * 60 * 60 * 24 + time1.getHour() * 60 * 60 + time1.getMinute() * 60 + time1.getSecond();
         Integer second2 = time2.getDay() * 60 * 60 * 24 + time2.getHour() * 60 * 60 + time2.getMinute() * 60 + time2.getSecond();
@@ -69,41 +71,41 @@ public class MyTime {
         return time;
     }
 
-    static public String subtractionTimesFormatString(MyTime time1, MyTime time2) {
-        Integer second1 = time1.getDay() * 60 * 60 * 24 + time1.getHour() * 60 * 60 + time1.getMinute() * 60 + time1.getSecond();
-        Integer second2 = time2.getDay() * 60 * 60 * 24 + time2.getHour() * 60 * 60 + time2.getMinute() * 60 + time2.getSecond();
+//    static public String subtractionTimesFormatString(MyTime time1, MyTime time2) {
+//        Integer second1 = time1.getDay() * 60 * 60 * 24 + time1.getHour() * 60 * 60 + time1.getMinute() * 60 + time1.getSecond();
+//        Integer second2 = time2.getDay() * 60 * 60 * 24 + time2.getHour() * 60 * 60 + time2.getMinute() * 60 + time2.getSecond();
+//
+//        Integer subtraction = second1 - second2;
+//
+//
+//        if (subtraction < 0) {
+//            subtraction = 0;
+//        }
+//
+//        Integer time3Day = subtraction / 60 / 60 / 24;
+//        Integer time3Hour = (subtraction - time3Day * 60 * 60 * 24) / 60 / 60;
+//        Integer time3Minute = (subtraction - time3Day * 60 * 60 * 24 - time3Hour * 60 * 60) / 60;
+//        Integer time3Second = subtraction - time3Day * 60 * 60 * 24 - time3Hour * 60 * 60 - time3Minute * 60;
+//
+//        String time = "";
+//
+//        if (time3Hour < 10) {
+//            time += "0";
+//        }
+//        time += time3Hour + ":";
+//        if (time3Minute < 10) {
+//            time += "0";
+//        }
+//        time += time3Minute + ":";
+//        if (time3Second < 10) {
+//            time += "0";
+//        }
+//        time += time3Second;
+//
+//        return time;
+//    }
 
-        Integer subtraction = second1 - second2;
-
-
-        if (subtraction < 0) {
-            subtraction = 0;
-        }
-
-        Integer time3Day = subtraction / 60 / 60 / 24;
-        Integer time3Hour = (subtraction - time3Day * 60 * 60 * 24) / 60 / 60;
-        Integer time3Minute = (subtraction - time3Day * 60 * 60 * 24 - time3Hour * 60 * 60) / 60;
-        Integer time3Second = subtraction - time3Day * 60 * 60 * 24 - time3Hour * 60 * 60 - time3Minute * 60;
-
-        String time = "";
-
-        if (time3Hour < 10) {
-            time += "0";
-        }
-        time += time3Hour + ":";
-        if (time3Minute < 10) {
-            time += "0";
-        }
-        time += time3Minute + ":";
-        if (time3Second < 10) {
-            time += "0";
-        }
-        time += time3Second;
-
-        return time;
-    }
-
-
+    // проверка что дата между датами
     static public Boolean isBetweenTimes(MyTime time0, MyTime time1, MyTime time2) {
         Integer second0 = time0.getDay() * 60 * 60 * 24 + time0.getHour() * 60 * 60 + time0.getMinute() * 60 + time0.getSecond();
         Integer second1 = time1.getDay() * 60 * 60 * 24 + time1.getHour() * 60 * 60 + time1.getMinute() * 60 + time1.getSecond();
@@ -116,7 +118,7 @@ public class MyTime {
         }
     }
 
-
+    // сложение возвращает MyTime
     static public MyTime additionTimes(MyTime time1, MyTime time2) {
         Integer second1 = time1.getDay() * 60 * 60 * 24 + time1.getHour() * 60 * 60 + time1.getMinute() * 60 + time1.getSecond();
         Integer second2 = time2.getDay() * 60 * 60 * 24 + time2.getHour() * 60 * 60 + time2.getMinute() * 60 + time2.getSecond();
@@ -129,6 +131,31 @@ public class MyTime {
         Integer time3Second = addition - time3Day * 60 * 60 * 24 - time3Hour * 60 * 60 - time3Minute * 60;
 
         return new MyTime(time3Day, time3Hour, time3Minute, time3Second);
+    }
+
+    public Integer getTimeAsSecond() {
+        return second = day * 60 * 60 * 24 + hour * 60 * 60 + minute * 60 + second;
+    }
+
+    public String getTimesFormatString() {
+        String time = "";
+
+        if (hour < 10) {
+            time += "0";
+        }
+        time += hour + ":";
+
+        if (minute < 10) {
+            time += "0";
+        }
+        time += minute + ":";
+
+        if (second < 10) {
+            time += "0";
+        }
+        time += second;
+
+        return time;
     }
 
     public Integer getDay() {

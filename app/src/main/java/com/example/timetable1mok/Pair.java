@@ -51,7 +51,7 @@ public class Pair {
         return timeEnd;
     }
 
-    public String getTimes() {
+    public String getTimesAsString() {
         String time = "";
 
         time += timeStart.getHour() + ":";

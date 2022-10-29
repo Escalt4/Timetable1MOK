@@ -16,15 +16,20 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 public class PageFragment extends Fragment {
-    String LogTag = "MyApp";
+    String LOG_TAG = "MyApp";
+
     private int pageNumber;
+    private View result;
+
     private Pair[][][][] timetable;
     private Integer group;
-    private Integer week;
+    private Integer weekType;
+    private Integer weekNum;
+
+    private Integer highlightWeek = -1;
     private Integer highlightDay = -1;
     private Integer highlightPair = -1;
     private Integer highlightBreak = -1;
-    private View result;
 
     public static PageFragment newInstance(int page) {
         PageFragment fragment = new PageFragment();
@@ -37,6 +42,7 @@ public class PageFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         pageNumber = getArguments() != null ? getArguments().getInt("num") : 1;
     }
 
@@ -57,7 +63,8 @@ public class PageFragment extends Fragment {
     public void onSetTimetableEvent(SetTimetableEvent event) {
         timetable = event.getTimetable();
         group = event.getGroup();
-        week = event.getWeek();
+        weekType = event.getWeekType();
+        weekNum = event.getWeekNum();
 
         setTimetable();
     }
@@ -66,14 +73,14 @@ public class PageFragment extends Fragment {
         for (int i = 0; i < 5; i++) {
             Integer lastPair = 5;
             for (int j = 4; j >= 0; j--) {
-                if (timetable[pageNumber][group - 1][week - 1][j] != null) {
+                if (timetable[pageNumber][group - 1][weekType - 1][j] != null) {
                     lastPair = j;
                     break;
                 }
             }
 
             LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (i + 1), "id", getActivity().getPackageName()));
-            if (timetable[pageNumber][group - 1][week - 1][i] == null) {
+            if (timetable[pageNumber][group - 1][weekType - 1][i] == null) {
                 if (i > lastPair) {
                     linearLayout.setVisibility(View.GONE);
                 } else {
@@ -86,13 +93,13 @@ public class PageFragment extends Fragment {
                 textViewNumder.setText(String.valueOf(i + 1));
 
                 TextView textViewSubject = result.findViewById(getResources().getIdentifier("textViewSubject" + (i + 1), "id", getActivity().getPackageName()));
-                textViewSubject.setText(timetable[pageNumber][group - 1][week - 1][i].getSubject());
+                textViewSubject.setText(timetable[pageNumber][group - 1][weekType - 1][i].getSubject());
 
                 TextView textViewInfo1 = result.findViewById(getResources().getIdentifier("textViewInfo1" + (i + 1), "id", getActivity().getPackageName()));
-                textViewInfo1.setText(timetable[pageNumber][group - 1][week - 1][i].getTimes() + " | " + timetable[pageNumber][group - 1][week - 1][i].getTypePairString());
+                textViewInfo1.setText(timetable[pageNumber][group - 1][weekType - 1][i].getTimesAsString() + " | " + timetable[pageNumber][group - 1][weekType - 1][i].getTypePairString());
 
                 TextView textViewInfo2 = result.findViewById(getResources().getIdentifier("textViewInfo2" + (i + 1), "id", getActivity().getPackageName()));
-                textViewInfo2.setText(timetable[pageNumber][group - 1][week - 1][i].getCabinetNum() + " | " + timetable[pageNumber][group - 1][week - 1][i].getTeacher());
+                textViewInfo2.setText(timetable[pageNumber][group - 1][weekType - 1][i].getCabinetNum() + " | " + timetable[pageNumber][group - 1][weekType - 1][i].getTeacher());
             }
         }
 
@@ -100,6 +107,7 @@ public class PageFragment extends Fragment {
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onSetHighlightingEvent(SetHighlightingEvent event) {
+        highlightWeek = event.getHighlightWeek();
         highlightDay = event.getHighlightDay();
         highlightPair = event.getHighlightPair();
         highlightBreak = event.getHighlightBreak();
@@ -108,24 +116,44 @@ public class PageFragment extends Fragment {
     }
 
     public void setHighlighting() {
-        for (int i = 0; i < 5; i++) {
-            LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (i + 1), "id", getActivity().getPackageName()));
-            if (highlightDay == pageNumber && highlightPair == i) {
-                linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner_enable));
-            } else {
-                linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner));
-            }
+        Log.d(LOG_TAG, "pageNumber " + pageNumber + " " + highlightWeek + " " + highlightDay + " " + highlightPair + " " + highlightBreak+ " " + weekNum);
 
-            LinearLayout linearLayout1 = result.findViewById(getResources().getIdentifier("linearLayout1" + (i + 1), "id", getActivity().getPackageName()));
-            if (highlightDay == pageNumber && highlightBreak == i) {
-                linearLayout1.setVisibility(View.VISIBLE);
-            } else {
-                linearLayout1.setVisibility(View.GONE);
+        if (highlightWeek == weekNum && highlightDay == pageNumber) {
+            for (int i = 0; i < 5; i++) {
+                LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (i + 1), "id", getActivity().getPackageName()));
+                if (highlightPair == i) {
+                    linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner_enable));
+                } else {
+                    linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner));
+                }
+
+                LinearLayout linearLayout1 = result.findViewById(getResources().getIdentifier("linearLayout1" + (i + 1), "id", getActivity().getPackageName()));
+                if (highlightDay == pageNumber && highlightBreak == i) {
+                    linearLayout1.setVisibility(View.VISIBLE);
+                } else {
+                    linearLayout1.setVisibility(View.GONE);
+                }
             }
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
     public void onDeleteHighlightingEvent(DeleteHighlightingEvent event) {
+        highlightWeek = -1;
+        highlightDay = -1;
+        highlightPair = -1;
+        highlightBreak = -1;
+
+        deleteHighlighting();
+    }
+
+    public void deleteHighlighting() {
+        for (int i = 0; i < 5; i++) {
+            LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (i + 1), "id", getActivity().getPackageName()));
+            linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner));
+
+            LinearLayout linearLayout1 = result.findViewById(getResources().getIdentifier("linearLayout1" + (i + 1), "id", getActivity().getPackageName()));
+            linearLayout1.setVisibility(View.GONE);
+        }
     }
 }

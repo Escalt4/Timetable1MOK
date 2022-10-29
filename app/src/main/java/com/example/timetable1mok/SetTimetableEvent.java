@@ -3,12 +3,14 @@ package com.example.timetable1mok;
 public class SetTimetableEvent {
     public final Pair[][][][] timetable;
     public final Integer group;
-    public final Integer week;
+    public final Integer weekType;
+    public final Integer weekNum;
 
-    public SetTimetableEvent(Pair[][][][] timetable, Integer group, Integer week) {
+    public SetTimetableEvent(Pair[][][][] timetable, Integer group, Integer weekType, Integer weekNum) {
         this.timetable = timetable;
         this.group = group;
-        this.week = week;
+        this.weekType = weekType;
+        this.weekNum = weekNum;
     }
 
     public Pair[][][][] getTimetable() {
@@ -19,8 +21,11 @@ public class SetTimetableEvent {
         return group;
     }
 
-    public Integer getWeek() {
-        return week;
+    public Integer getWeekType() {
+        return weekType;
     }
 
+    public Integer getWeekNum() {
+        return weekNum;
+    }
 }
