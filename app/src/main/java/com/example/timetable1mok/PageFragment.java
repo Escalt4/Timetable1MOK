@@ -1,11 +1,11 @@
 package com.example.timetable1mok;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
@@ -16,8 +16,6 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 public class PageFragment extends Fragment {
-    String LOG_TAG = "MyApp";
-
     private int pageNumber;
     private View result;
 
@@ -29,6 +27,7 @@ public class PageFragment extends Fragment {
     private Integer highlightDay = -1;
     private Integer highlightPair = -1;
     private Integer highlightBreak = -1;
+    private String brakeBlockLabel;
 
     public static PageFragment newInstance(int page) {
         PageFragment fragment = new PageFragment();
@@ -43,6 +42,7 @@ public class PageFragment extends Fragment {
         outState.putInt("group", this.group);
         outState.putInt("weekType", this.weekType);
         outState.putInt("weekNum", this.weekNum);
+        outState.putString("brakeBlockLabel", this.brakeBlockLabel);
 
         super.onSaveInstanceState(outState);
     }
@@ -61,6 +61,7 @@ public class PageFragment extends Fragment {
             this.group = savedInstanceState.getInt("group");
             this.weekType = savedInstanceState.getInt("weekType");
             this.weekNum = savedInstanceState.getInt("weekNum");
+            this.brakeBlockLabel = savedInstanceState.getString("brakeBlockLabel");
         }
 
         EventBus.getDefault().register(this);
@@ -84,6 +85,7 @@ public class PageFragment extends Fragment {
         highlightDay = event.getHighlightDay();
         highlightPair = event.getHighlightPair();
         highlightBreak = event.getHighlightBreak();
+        brakeBlockLabel = event.getBrakeBlockLabel();
 
         setTimetable();
         deleteHighlighting();
@@ -136,8 +138,6 @@ public class PageFragment extends Fragment {
     }
 
     public void setHighlighting() {
-        Log.d(LOG_TAG, "pageNumber " + pageNumber + " " + highlightWeek + " " + highlightDay + " " + highlightPair + " " + highlightBreak + " " + weekNum);
-
         if (highlightWeek == weekNum && highlightDay == pageNumber) {
             for (int i = 0; i < 5; i++) {
                 LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (i + 1), "id", getActivity().getPackageName()));
@@ -150,6 +150,8 @@ public class PageFragment extends Fragment {
                 LinearLayout linearLayout1 = result.findViewById(getResources().getIdentifier("linearLayout1" + (i + 1), "id", getActivity().getPackageName()));
                 if (highlightDay == pageNumber && highlightBreak == i) {
                     linearLayout1.setVisibility(View.VISIBLE);
+                    TextView textView1 = result.findViewById(getResources().getIdentifier("textView1" + (i + 1), "id", getActivity().getPackageName()));
+                    textView1.setText(brakeBlockLabel);
                 } else {
                     linearLayout1.setVisibility(View.GONE);
                 }

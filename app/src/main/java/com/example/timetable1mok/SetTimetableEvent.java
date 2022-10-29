@@ -9,6 +9,7 @@ public class SetTimetableEvent {
     public final Integer highlightDay;
     public final Integer highlightPair;
     public final Integer highlightBreak;
+    public final String brakeBlockLabel;
 
     public SetTimetableEvent(Pair[][][][] timetable,
                              Integer group,
@@ -17,8 +18,8 @@ public class SetTimetableEvent {
                              Integer highlightWeek,
                              Integer highlightDay,
                              Integer highlightPair,
-                             Integer highlightBreak) {
-
+                             Integer highlightBreak,
+                             String brakeBlockLabel) {
         this.timetable = timetable;
         this.group = group;
         this.weekType = weekType;
@@ -27,6 +28,7 @@ public class SetTimetableEvent {
         this.highlightDay = highlightDay;
         this.highlightPair = highlightPair;
         this.highlightBreak = highlightBreak;
+        this.brakeBlockLabel = brakeBlockLabel;
     }
 
     public Pair[][][][] getTimetable() {
@@ -59,5 +61,9 @@ public class SetTimetableEvent {
 
     public Integer getHighlightWeek() {
         return highlightWeek;
+    }
+
+    public String getBrakeBlockLabel() {
+        return brakeBlockLabel;
     }
 }

@@ -1,21 +1,16 @@
 package com.example.timetable1mok;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.app.Fragment;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -24,7 +19,6 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.InputStream;
 import java.util.Calendar;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     static final String LOG_TAG = "MyApp";
@@ -63,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     Integer[] changeWeekMonth;      // список месяцев дней выбраной недели
     Integer changeGroup;            // выбраная группа
     Integer changeTab = 0;          // выбраная вкладка
+    String brakeBlockLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,12 +83,10 @@ public class MainActivity extends AppCompatActivity {
             changeCalendar.add(Calendar.DAY_OF_YEAR, 7);
         }
         updChangeDateVar();
-
         getCalls();
         getTimetable();
         createTimetablePages();
         setTimetable();
-
         timer();
     }
 
@@ -228,7 +221,6 @@ public class MainActivity extends AppCompatActivity {
                                 callsSchedule[i][p][1]);
                     }
                 }
-
             }
         } catch (Exception ex) {
             Log.e(LOG_TAG, Log.getStackTraceString(ex));
@@ -254,7 +246,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setTimetable() {
-        EventBus.getDefault().postSticky(new SetTimetableEvent(timetable, changeGroup, changeWeekType, changeWeekNum, lastHighlightWeek, lastHighlightDay, lastHighlightPair, lastHighlightBreak));
+        EventBus.getDefault().postSticky(new SetTimetableEvent(
+                timetable,
+                changeGroup,
+                changeWeekType,
+                changeWeekNum,
+                lastHighlightWeek,
+                lastHighlightDay,
+                lastHighlightPair,
+                lastHighlightBreak,
+                brakeBlockLabel));
     }
 
     // обновление заголовков вкладок
@@ -287,8 +288,8 @@ public class MainActivity extends AppCompatActivity {
                     int weekNum = curWeekNum;
                     while (true) {
                         if (dayOfWeek > 4) {
-                            dayOfWeek = 0;
                             dayDelta += (7 - dayOfWeek);
+                            dayOfWeek = 0;
 
                             if (weekType == 1) {
                                 weekType = 2;
@@ -303,8 +304,17 @@ public class MainActivity extends AppCompatActivity {
                                         MyTime.additionTimes(
                                                 timetable[dayOfWeek][changeGroup - 1][weekType - 1][pair].getTimeStart(),
                                                 new MyTime(dayDelta, 0, 0, 0
-                                                )), curTime) >= 0) {
-                                    if (lastHighlightWeek != weekNum || lastHighlightDay != dayOfWeek || lastHighlightPair != -1 || lastHighlightBreak != pair) {
+                                                )), curTime) > 0) {
+                                    String newBrakeBlockLabel = "Пары скоро начнутся";
+                                    if (pair > 0 && timetable[dayOfWeek][changeGroup - 1][weekType - 1][pair - 1] != null) {
+                                        newBrakeBlockLabel = "Перерыв " + MyTime.subtractionTimes(
+                                                timetable[dayOfWeek][changeGroup - 1][weekType - 1][pair].getTimeStart(),
+                                                timetable[dayOfWeek][changeGroup - 1][weekType - 1][pair - 1].getTimeEnd()
+                                        ).getMinute() + " минут";
+                                    }
+
+                                    if (brakeBlockLabel != newBrakeBlockLabel || lastHighlightWeek != weekNum || lastHighlightDay != dayOfWeek || lastHighlightPair != -1 || lastHighlightBreak != pair) {
+                                        brakeBlockLabel = newBrakeBlockLabel;
                                         lastHighlightWeek = weekNum;
                                         lastHighlightDay = dayOfWeek;
                                         lastHighlightPair = -1;
@@ -312,13 +322,20 @@ public class MainActivity extends AppCompatActivity {
 
                                         setTimetable();
                                     }
+
+                                    textViewTimer.setText("До начала пары:\n" + MyTime.doTimesFormatedString(MyTime.subtractionTimes(
+                                            MyTime.additionTimes(
+                                                    timetable[dayOfWeek][changeGroup - 1][weekType - 1][pair].getTimeStart(),
+                                                    new MyTime(dayDelta, 0, 0, 0)),
+                                            curTime)));
+
                                     break label1;
                                 }
                                 if (MyTime.subtractionTimesSecond(
                                         MyTime.additionTimes(
                                                 timetable[dayOfWeek][changeGroup - 1][weekType - 1][pair].getTimeEnd(),
                                                 new MyTime(dayDelta, 0, 0, 0
-                                                )), curTime) >= 0) {
+                                                )), curTime) > 0) {
                                     if (lastHighlightWeek != weekNum || lastHighlightDay != dayOfWeek || lastHighlightPair != pair || lastHighlightBreak != -1) {
                                         lastHighlightWeek = weekNum;
                                         lastHighlightDay = dayOfWeek;
@@ -327,6 +344,13 @@ public class MainActivity extends AppCompatActivity {
 
                                         setTimetable();
                                     }
+
+                                    textViewTimer.setText("До конца пары:\n" + MyTime.doTimesFormatedString(MyTime.subtractionTimes(
+                                            MyTime.additionTimes(
+                                                    timetable[dayOfWeek][changeGroup - 1][weekType - 1][pair].getTimeEnd(),
+                                                    new MyTime(dayDelta, 0, 0, 0)),
+                                            curTime)));
+
                                     break label1;
                                 }
                             }
@@ -344,7 +368,6 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 timer();
-
             } catch (Exception ex) {
                 Log.e(LOG_TAG, Log.getStackTraceString(ex));
             }
@@ -392,9 +415,6 @@ public class MainActivity extends AppCompatActivity {
                 updChangeDateVar();
                 updateTabsNames();
                 setTimetable();
-                break;
-
-            default:
                 break;
         }
     }
