@@ -1,16 +1,21 @@
 package com.example.timetable1mok;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.app.Fragment;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -19,6 +24,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import java.io.InputStream;
 import java.util.Calendar;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     static final String LOG_TAG = "MyApp";
@@ -88,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         createTimetablePages();
         setTimetable();
 
-//        timer();
+        timer();
     }
 
     @Override
@@ -247,26 +253,8 @@ public class MainActivity extends AppCompatActivity {
         pager.setCurrentItem(TABS[changeDayOfWeek], false);
     }
 
-    // установка расписания
     public void setTimetable() {
-        Log.d(LOG_TAG, "setTimetable "+lastHighlightWeek+" "+ lastHighlightDay+" "+  lastHighlightPair+" "+  lastHighlightBreak);
-        EventBus.getDefault().postSticky(new SetTimetableEvent(timetable, changeGroup, changeWeekType, changeWeekNum));
-//        EventBus.getDefault().postSticky(new DeleteHighlightingEvent());
-//        EventBus.getDefault().postSticky(new SetHighlightingEvent(lastHighlightWeek, lastHighlightDay, lastHighlightPair, lastHighlightBreak));
-    }
-
-    public void setHighlighting(Integer highlightWeek, Integer highlightDay, Integer highlightPair, Integer highlightBreak) {
-        if (lastHighlightWeek != highlightWeek || lastHighlightDay != highlightDay || lastHighlightPair != highlightPair || lastHighlightBreak != highlightBreak) {
-            lastHighlightWeek = highlightWeek;
-            lastHighlightDay = highlightDay;
-            lastHighlightPair = highlightPair;
-            lastHighlightBreak = highlightBreak;
-
-            Log.d(LOG_TAG, "setHighlighting "+lastHighlightWeek+" "+ lastHighlightDay+" "+  lastHighlightPair+" "+  lastHighlightBreak);
-
-            EventBus.getDefault().postSticky(new DeleteHighlightingEvent());
-            EventBus.getDefault().postSticky(new SetHighlightingEvent(lastHighlightWeek, lastHighlightDay, lastHighlightPair, lastHighlightBreak));
-        }
+        EventBus.getDefault().postSticky(new SetTimetableEvent(timetable, changeGroup, changeWeekType, changeWeekNum, lastHighlightWeek, lastHighlightDay, lastHighlightPair, lastHighlightBreak));
     }
 
     // обновление заголовков вкладок
@@ -277,7 +265,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     MyTime curTime;
-
     Handler handler = new Handler();
     Runnable runnable = new Runnable() {
         @Override
@@ -317,7 +304,14 @@ public class MainActivity extends AppCompatActivity {
                                                 timetable[dayOfWeek][changeGroup - 1][weekType - 1][pair].getTimeStart(),
                                                 new MyTime(dayDelta, 0, 0, 0
                                                 )), curTime) >= 0) {
-                                    setHighlighting(weekNum, dayOfWeek, -1, pair);
+                                    if (lastHighlightWeek != weekNum || lastHighlightDay != dayOfWeek || lastHighlightPair != -1 || lastHighlightBreak != pair) {
+                                        lastHighlightWeek = weekNum;
+                                        lastHighlightDay = dayOfWeek;
+                                        lastHighlightPair = -1;
+                                        lastHighlightBreak = pair;
+
+                                        setTimetable();
+                                    }
                                     break label1;
                                 }
                                 if (MyTime.subtractionTimesSecond(
@@ -325,7 +319,14 @@ public class MainActivity extends AppCompatActivity {
                                                 timetable[dayOfWeek][changeGroup - 1][weekType - 1][pair].getTimeEnd(),
                                                 new MyTime(dayDelta, 0, 0, 0
                                                 )), curTime) >= 0) {
-                                    setHighlighting(weekNum, dayOfWeek, pair, -1);
+                                    if (lastHighlightWeek != weekNum || lastHighlightDay != dayOfWeek || lastHighlightPair != pair || lastHighlightBreak != -1) {
+                                        lastHighlightWeek = weekNum;
+                                        lastHighlightDay = dayOfWeek;
+                                        lastHighlightPair = pair;
+                                        lastHighlightBreak = -1;
+
+                                        setTimetable();
+                                    }
                                     break label1;
                                 }
                             }

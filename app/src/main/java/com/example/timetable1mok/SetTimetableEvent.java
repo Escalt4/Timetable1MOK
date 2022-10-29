@@ -5,12 +5,28 @@ public class SetTimetableEvent {
     public final Integer group;
     public final Integer weekType;
     public final Integer weekNum;
+    public final Integer highlightWeek;
+    public final Integer highlightDay;
+    public final Integer highlightPair;
+    public final Integer highlightBreak;
 
-    public SetTimetableEvent(Pair[][][][] timetable, Integer group, Integer weekType, Integer weekNum) {
+    public SetTimetableEvent(Pair[][][][] timetable,
+                             Integer group,
+                             Integer weekType,
+                             Integer weekNum,
+                             Integer highlightWeek,
+                             Integer highlightDay,
+                             Integer highlightPair,
+                             Integer highlightBreak) {
+
         this.timetable = timetable;
         this.group = group;
         this.weekType = weekType;
         this.weekNum = weekNum;
+        this.highlightWeek = highlightWeek;
+        this.highlightDay = highlightDay;
+        this.highlightPair = highlightPair;
+        this.highlightBreak = highlightBreak;
     }
 
     public Pair[][][][] getTimetable() {
@@ -27,5 +43,21 @@ public class SetTimetableEvent {
 
     public Integer getWeekNum() {
         return weekNum;
+    }
+
+    public Integer getHighlightDay() {
+        return highlightDay;
+    }
+
+    public Integer getHighlightPair() {
+        return highlightPair;
+    }
+
+    public Integer getHighlightBreak() {
+        return highlightBreak;
+    }
+
+    public Integer getHighlightWeek() {
+        return highlightWeek;
     }
 }

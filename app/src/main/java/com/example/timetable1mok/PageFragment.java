@@ -25,7 +25,6 @@ public class PageFragment extends Fragment {
     private Integer group;
     private Integer weekType;
     private Integer weekNum;
-
     private Integer highlightWeek = -1;
     private Integer highlightDay = -1;
     private Integer highlightPair = -1;
@@ -40,16 +39,32 @@ public class PageFragment extends Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(final Bundle outState) {
+        outState.putInt("group", this.group);
+        outState.putInt("weekType", this.weekType);
+        outState.putInt("weekNum", this.weekNum);
+
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
         pageNumber = getArguments() != null ? getArguments().getInt("num") : 1;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         result = inflater.inflate(R.layout.fragment_page, container, false);
+
+        if (savedInstanceState != null) {
+            this.group = savedInstanceState.getInt("group");
+            this.weekType = savedInstanceState.getInt("weekType");
+            this.weekNum = savedInstanceState.getInt("weekNum");
+        }
+
         EventBus.getDefault().register(this);
+
         return result;
     }
 
@@ -65,8 +80,14 @@ public class PageFragment extends Fragment {
         group = event.getGroup();
         weekType = event.getWeekType();
         weekNum = event.getWeekNum();
+        highlightWeek = event.getHighlightWeek();
+        highlightDay = event.getHighlightDay();
+        highlightPair = event.getHighlightPair();
+        highlightBreak = event.getHighlightBreak();
 
         setTimetable();
+        deleteHighlighting();
+        setHighlighting();
     }
 
     public void setTimetable() {
@@ -102,21 +123,20 @@ public class PageFragment extends Fragment {
                 textViewInfo2.setText(timetable[pageNumber][group - 1][weekType - 1][i].getCabinetNum() + " | " + timetable[pageNumber][group - 1][weekType - 1][i].getTeacher());
             }
         }
-
     }
 
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onSetHighlightingEvent(SetHighlightingEvent event) {
-        highlightWeek = event.getHighlightWeek();
-        highlightDay = event.getHighlightDay();
-        highlightPair = event.getHighlightPair();
-        highlightBreak = event.getHighlightBreak();
+    public void deleteHighlighting() {
+        for (int i = 0; i < 5; i++) {
+            LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (i + 1), "id", getActivity().getPackageName()));
+            linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner));
 
-        setHighlighting();
+            LinearLayout linearLayout1 = result.findViewById(getResources().getIdentifier("linearLayout1" + (i + 1), "id", getActivity().getPackageName()));
+            linearLayout1.setVisibility(View.GONE);
+        }
     }
 
     public void setHighlighting() {
-        Log.d(LOG_TAG, "pageNumber " + pageNumber + " " + highlightWeek + " " + highlightDay + " " + highlightPair + " " + highlightBreak+ " " + weekNum);
+        Log.d(LOG_TAG, "pageNumber " + pageNumber + " " + highlightWeek + " " + highlightDay + " " + highlightPair + " " + highlightBreak + " " + weekNum);
 
         if (highlightWeek == weekNum && highlightDay == pageNumber) {
             for (int i = 0; i < 5; i++) {
@@ -134,26 +154,6 @@ public class PageFragment extends Fragment {
                     linearLayout1.setVisibility(View.GONE);
                 }
             }
-        }
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
-    public void onDeleteHighlightingEvent(DeleteHighlightingEvent event) {
-        highlightWeek = -1;
-        highlightDay = -1;
-        highlightPair = -1;
-        highlightBreak = -1;
-
-        deleteHighlighting();
-    }
-
-    public void deleteHighlighting() {
-        for (int i = 0; i < 5; i++) {
-            LinearLayout linearLayout = result.findViewById(getResources().getIdentifier("linearLayout" + (i + 1), "id", getActivity().getPackageName()));
-            linearLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.rounded_corner));
-
-            LinearLayout linearLayout1 = result.findViewById(getResources().getIdentifier("linearLayout1" + (i + 1), "id", getActivity().getPackageName()));
-            linearLayout1.setVisibility(View.GONE);
         }
     }
 }

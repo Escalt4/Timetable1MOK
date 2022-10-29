@@ -1,6 +1,9 @@
 package com.example.timetable1mok;
 
-public class Pair {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Pair{
     String subject;         // название предмета
     String cabinetNum;      // номер кабинета
     String teacher;         // имя преподавателя
@@ -55,13 +58,13 @@ public class Pair {
         String time = "";
 
         time += timeStart.getHour() + ":";
-        if (timeStart.getMinute() < 10){
+        if (timeStart.getMinute() < 10) {
             time += "0";
         }
         time += timeStart.getMinute() + " - ";
 
         time += timeEnd.getHour() + ":";
-        if (timeEnd.getMinute() < 10){
+        if (timeEnd.getMinute() < 10) {
             time += "0";
         }
         time += timeEnd.getMinute();
