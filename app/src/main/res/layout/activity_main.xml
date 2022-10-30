@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?attr/colorSecondary"
-    android:padding="10dp"
     tools:context=".MainActivity">
 
     <FrameLayout
@@ -18,69 +17,94 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/colorSecondary" />
+
+
+
+<!--            <LinearLayout-->
+<!--                android:id="@+id/linearLayout1"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:orientation="horizontal"-->
+<!--                android:paddingHorizontal="10dp"-->
+<!--                android:weightSum="2">-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:orientation="horizontal">-->
+
+<!--                    <com.google.android.material.button.MaterialButton-->
+<!--                        android:id="@+id/buttonSettings"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="50dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:enabled="true"-->
+<!--                        android:gravity="center"-->
+<!--                        android:insetLeft="6dp"-->
+<!--                        android:insetRight="6dp"-->
+<!--                        android:textAllCaps="false"-->
+<!--                        android:textSize="16sp"-->
+<!--                        app:cornerRadius="25dp"-->
+<!--                        app:icon="@drawable/settings_icon"-->
+<!--                        app:iconGravity="textStart"-->
+<!--                        app:iconPadding="0dp" />-->
+
+<!--                    <Button-->
+<!--                        android:id="@+id/buttonGroupChange"-->
+<!--                        android:layout_width="match_parent"-->
+<!--                        android:layout_height="50dp"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:gravity="center"-->
+<!--                        android:insetLeft="6dp"-->
+<!--                        android:insetRight="6dp"-->
+<!--                        android:maxLines="1"-->
+<!--                        android:onClick="onClick"-->
+<!--                        android:text="2"-->
+<!--                        android:textAllCaps="false"-->
+<!--                        android:textSize="16sp"-->
+<!--                        app:cornerRadius="25dp" />-->
+
+<!--                </LinearLayout>-->
+
+<!--                <LinearLayout-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_gravity="center"-->
+<!--                    android:layout_weight="1"-->
+<!--                    android:gravity="center"-->
+<!--                    android:orientation="vertical">-->
+
+<!--                    <TextView-->
+<!--                        android:id="@+id/textViewCurWeek"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:gravity="center"-->
+<!--                        android:text=""-->
+<!--                        android:textColor="?attr/colorPrimary"-->
+<!--                        android:textSize="16sp"-->
+<!--                        android:textStyle="bold" />-->
+
+<!--                </LinearLayout>-->
+
+<!--            </LinearLayout>-->
+
             <LinearLayout
-                android:id="@+id/linearLayout1"
+                android:id="@+id/linearLayout2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="2">
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/buttonSettings"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:enabled="false"
-                        android:gravity="center"
-                        android:insetLeft="6dp"
-                        android:insetRight="6dp"
-                        android:textAllCaps="false"
-                        android:textSize="16sp"
-                        app:cornerRadius="25dp"
-                        app:icon="@drawable/settings_icon"
-                        app:iconGravity="textStart"
-                        app:iconPadding="0dp" />
-
-                    <Button
-                        android:id="@+id/buttonHelp"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:enabled="false"
-                        android:gravity="center"
-                        android:insetLeft="6dp"
-                        android:insetRight="6dp"
-                        android:onClick="onClick"
-                        android:text="?"
-                        android:textAllCaps="false"
-                        android:textSize="16sp"
-                        app:cornerRadius="25dp" />
-
-                    <Button
-                        android:id="@+id/buttonGroup"
-                        android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:insetLeft="6dp"
-                        android:insetRight="6dp"
-                        android:maxLines="1"
-                        android:onClick="onClick"
-                        android:text="2"
-                        android:textAllCaps="false"
-                        android:textSize="16sp"
-                        app:cornerRadius="25dp" />
-
-                </LinearLayout>
+                android:paddingHorizontal="10dp"
+                android:weightSum="2"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout1">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -103,49 +127,17 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearLayout2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2"
-                app:layout_constraintTop_toBottomOf="@+id/linearLayout1">
-
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/textViewCurWeek"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:gravity="center"
-                        android:text=""
-                        android:textColor="?attr/colorPrimary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
                     android:orientation="horizontal">
 
                     <Button
                         android:id="@+id/buttonWeekDown"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="50dp"
+                        android:layout_weight="1"
                         android:gravity="center"
                         android:insetLeft="6dp"
                         android:insetRight="6dp"
@@ -157,8 +149,9 @@
 
                     <Button
                         android:id="@+id/buttonWeekUp"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="50dp"
+                        android:layout_weight="1"
                         android:gravity="center"
                         android:insetLeft="6dp"
                         android:insetRight="6dp"
@@ -181,10 +174,11 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout2" />
 
+
             <androidx.viewpager2.widget.ViewPager2
                 android:id="@+id/pager"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_weight="1"
                 android:background="?attr/colorSecondary"
                 android:textSize="22sp"
@@ -192,10 +186,11 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tab_layout" />
 
-
             <LinearLayout
                 android:id="@+id/linearLayout3"
                 android:layout_width="match_parent"
+                android:paddingHorizontal="10dp"
+                android:paddingBottom="10dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:weightSum="2">
@@ -254,6 +249,7 @@
             </LinearLayout>
 
         </LinearLayout>
+
 
     </FrameLayout>
 
