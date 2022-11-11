@@ -14,8 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="?attr/colorSecondary"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp">
+            android:paddingTop="5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -535,6 +534,28 @@
                     </TableLayout>
 
                 </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/linearLayout16"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="3dp"
+                    android:background="@drawable/rounded_corner_enable"
+                    android:orientation="horizontal"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/textView16"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text=""
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                </LinearLayout>
+
             </LinearLayout>
 
         </ScrollView>

@@ -1,12 +1,17 @@
 package com.example.timetable1mok;
 
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.TaskStackBuilder;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -38,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences.Editor prefEditor;
 
     TextView textViewTimer;
-    //    TextView textViewCurWeek;
     Button buttonToCurrentDate;
     ViewPager2 pager;
     TabLayout tabLayout;
@@ -68,14 +72,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+                super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         textViewTimer = findViewById(R.id.textViewTimer);
-//        textViewCurWeek = findViewById(R.id.textViewCurWeek);
         buttonToCurrentDate = findViewById(R.id.buttonToCurrentDate);
 
         settings = getSharedPreferences("Settings", MODE_PRIVATE);
@@ -89,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         if (DAYS_OF_WEEK[changeCalendar.get(Calendar.DAY_OF_WEEK) - 1] > 4) {
             changeCalendar.add(Calendar.DAY_OF_YEAR, 7);
         }
+
         updChangeDateVar();
         getCalls();
         getTimetable();
@@ -117,9 +121,14 @@ public class MainActivity extends AppCompatActivity {
                 setTimetable();
                 return true;
 
+
             case R.id.menuSettings:
 //                Intent intent = new Intent(this, SettingsActivity.class);
 //                startActivity(intent);
+//
+//                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+//                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+//                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                 return true;
 
             default:
@@ -130,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onPause() {
         super.onPause();
-
         prefEditor.putInt("changeGroup", changeGroup);
         prefEditor.apply();
     }
@@ -151,10 +159,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (changeCalendar.get(Calendar.WEEK_OF_YEAR) % 2 == 0) {
             changeWeekType = 2;
-//            textViewCurWeek.setText("Нижняя неделя");
         } else {
             changeWeekType = 1;
-//            textViewCurWeek.setText("Верхняя неделя");
         }
 
         changeWeekNum = changeCalendar.get(Calendar.WEEK_OF_YEAR);
